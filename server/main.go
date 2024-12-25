@@ -1,9 +1,14 @@
 package main
 
 import (
-	"encoding/json"
+	"context"
 	"go-pmp/db"
+	"log"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -18,16 +23,35 @@ func main() {
 	db.Connect()
 
 	r := chi.NewRouter()
-	r.Get("/api/health", func(w http.ResponseWriter, r *http.Request) {
 
-		test := Test{
-			Name: "Tim",
-			Age:  23,
+	v1Router := chi.NewRouter()
+
+	r.Mount("/api/v1", v1Router)
+
+	server := &http.Server{
+		Addr:    ":8080",
+		Handler: r,
+	}
+
+	shutdown := make(chan os.Signal, 1)
+	signal.Notify(shutdown, os.Interrupt, syscall.SIGTERM)
+
+	go func() {
+		log.Println("Starting server on :8080")
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("ListenAndServe error: %v", err)
 		}
+	}()
 
-		w.Header().Set("Content-Type", "application/json")
+	<-shutdown
+	log.Println("Shutting down gracefully...")
 
-		json.NewEncoder(w).Encode(test)
-	})
-	http.ListenAndServe(":8080", r)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	if err := server.Shutdown(ctx); err != nil {
+		log.Fatalf("Server forced to shutdown: %v", err)
+	}
+
+	log.Println("Server stopped cleanly")
 }

@@ -14,7 +14,7 @@ func Connect() {
 	var err error
 
 	// Update the connection string if necessary
-	dsn := "postgres://postgres:postgres@localhost:5432/myappdb?sslmode=disable"
+	dsn := "postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable"
 
 	DB, err = sql.Open("pgx", dsn)
 	if err != nil {
