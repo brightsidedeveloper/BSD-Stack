@@ -10,7 +10,7 @@ mup:
 	migrate -path $(MIGRATIONS_PATH) -database $(DATABASE_URL) up
 
 mdown:
-	migrate -path $(MIGRATIONS_PATH) -database $(DATABASE_URL) down 1
+	migrate -path $(MIGRATIONS_PATH) -database $(DATABASE_URL) down -all
 
 mforce:
 	migrate -path $(MIGRATIONS_PATH) -database $(DATABASE_URL) force $(version)

@@ -5,26 +5,29 @@ import (
 	"database/sql"
 	"log"
 
-	_ "github.com/jackc/pgx/v5/stdlib" // PostgreSQL driver
+	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
-var DB *sql.DB
+type Postgres struct {
+	DB *sql.DB
+}
 
-func Connect() {
-	var err error
-
-	// Update the connection string if necessary
-	dsn := "postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable"
-
-	DB, err = sql.Open("pgx", dsn)
+func CreateDB(dsn string) (*Postgres, error) {
+	db, err := sql.Open("pgx", dsn)
 	if err != nil {
-		log.Fatalf("Error opening database: %v\n", err)
+		return nil, err
 	}
-
-	// Test the connection
-	if err := DB.PingContext(context.Background()); err != nil {
-		log.Fatalf("Error pinging database: %v\n", err)
+	if err := db.PingContext(context.Background()); err != nil {
+		return nil, err
 	}
-
 	log.Println("Database connected successfully!")
+	return &Postgres{DB: db}, nil
+}
+
+func (p *Postgres) Query(ctx context.Context, query string, args ...interface{}) (*sql.Rows, error) {
+	return p.DB.QueryContext(ctx, query, args...)
+}
+
+func (p *Postgres) Close() error {
+	return p.DB.Close()
 }

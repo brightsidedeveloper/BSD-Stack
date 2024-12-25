@@ -1,1 +1,0 @@
-DROP SCHEMA auth CASCADE;

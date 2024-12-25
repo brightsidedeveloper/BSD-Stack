@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"go-pmp/db"
+	"go-pmp/internal/handler"
 	"log"
 	"net/http"
 	"os"
@@ -11,6 +12,7 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/joho/godotenv"
 )
 
 type Test struct {
@@ -20,11 +22,25 @@ type Test struct {
 
 func main() {
 
-	db.Connect()
+	if err := godotenv.Load(); err != nil {
+		log.Fatalf("Error loading .env file: %v", err)
+	}
+
+	dsn := os.Getenv("DSN")
+
+	db, err := db.CreateDB(dsn)
+	if err != nil {
+		log.Fatalf("Error connecting to database: %v", err)
+	}
+	defer db.Close()
+
+	h := &handler.Handler{DB: db}
 
 	r := chi.NewRouter()
 
 	v1Router := chi.NewRouter()
+
+	v1Router.Get("/users", h.GetUsers)
 
 	r.Mount("/api/v1", v1Router)
 
