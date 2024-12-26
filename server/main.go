@@ -40,6 +40,7 @@ func main() {
 
 	v1Router := chi.NewRouter()
 
+	v1Router.Get("/health", handler.HealthCheck)
 	v1Router.Get("/users", h.GetUsers)
 
 	r.Mount("/api/v1", v1Router)
