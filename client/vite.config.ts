@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/api': 'http://localhost:8080', // Proxy API requests to the Go server
+      '/api': 'https://8.brightsideserve.com',
     },
   },
 })

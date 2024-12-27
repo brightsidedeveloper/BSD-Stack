@@ -2,20 +2,9 @@ package handler
 
 import (
 	"context"
-	"go-pmp/db"
-	"go-pmp/internal/res"
+	"go-pmp/api"
 	"net/http"
 )
-
-type User struct {
-	ID        string `json:"id"`
-	Email     string `json:"email"`
-	CreatedAt string `json:"createdAt"`
-}
-
-type Handler struct {
-	DB *db.Postgres
-}
 
 func (h *Handler) GetUsers(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
@@ -28,10 +17,10 @@ func (h *Handler) GetUsers(w http.ResponseWriter, r *http.Request) {
 	}
 	defer rows.Close()
 
-	users := make([]User, 0)
+	users := make([]api.V1UsersResponseUsers, 0)
 	for rows.Next() {
-		var user User
-		if err := rows.Scan(&user.ID, &user.Email, &user.CreatedAt); err != nil {
+		var user api.V1UsersResponseUsers
+		if err := rows.Scan(&user.Id, &user.Email, &user.CreatedAt); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -39,5 +28,5 @@ func (h *Handler) GetUsers(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	res.JSON(w, http.StatusOK, users)
+	api.Success(w, api.V1UsersResponse{Users: users})
 }
