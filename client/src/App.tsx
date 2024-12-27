@@ -8,7 +8,7 @@ export default function App() {
   const { data: d2 } = useQuery(createV1HealthQuery({ awesome: true }))
 
   return (
-    <div>
+    <div className="[&_p]:text-xl flex flex-col gap-4">
       <p>React Version: {React.version}</p>
       <p>{d2?.status}</p>
       <ul>
