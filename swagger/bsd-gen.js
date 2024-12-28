@@ -370,7 +370,7 @@ const main = () => {
   fs.writeFileSync(goOutputFile, generatedGoStructs, 'utf8')
   spinner5.succeed(chalk.green(`Generated Go structs in ${outputDirGo.replace('.', '') + '/types.go'}`))
 
-  log(chalk.green('\nDone!'))
+  log(chalk.green('\nDone!\n'))
 }
 
 main()

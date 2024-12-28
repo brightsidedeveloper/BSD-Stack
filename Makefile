@@ -3,6 +3,17 @@ include .env
 export
 endif
 
+# DEPLOYMENT
+
+dbuild:
+	docker-compose build
+
+dup:
+	docker-compose up -d
+
+ddown:
+	docker-compose down
+	
 
 # SWAGGER
 
