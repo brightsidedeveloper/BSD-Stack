@@ -2,12 +2,13 @@
 
 # Swagger
 
-I am using a swagger (which is fitting with how swag this app is) OpenAPI3 file with a generator script to auto-magically
-Implement all of the Types, Data Fetching, TanStack Queries & S3 Requirements of the App
+I am using a Swagger (OpenAPI3) file with and a custom gen script to auto-magically
+implement all of the Types, Data Fetching, TanStack Queries & S3 Requirements of the App.
+Both Native & Web
 
 # Go
 
-The backend is written in Go and serves the frontend, as well as all the endpoints.
+The backend is written in Go and serves the web frontend, as well as all the endpoints.
 
 # React 19 & Vite 6 [ with TanStack ]
 
