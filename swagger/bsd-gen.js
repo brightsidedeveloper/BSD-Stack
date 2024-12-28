@@ -1,17 +1,26 @@
 const fs = require('fs')
 const path = require('path')
+const chalk = require('chalk')
+const ora = require('ora')
+const { log } = require('console')
 require('dotenv').config()
 
 const apiFilePath = './api.json' // Path to your OpenAPI JSON file
 const output1Dir = '../web/src/api' // Output directory for generated files
 const output2Dir = '../native/api' // Output directory for generated files
+const outputDirGo = '../server/api'
 const outputBSDFile = 'ez.ts' // API client file name
 const outputTypesFile = 'types.ts' // Generated types file name
 const requestFilePath = './util/request.ts' // Path to the request.ts file
 const origin = process.env.ORIGIN
 if (!origin) {
-  console.error('Please set the ORIGIN environment variable')
+  console.error(chalk.red('Error: Please set the ORIGIN environment variable'))
   process.exit(1)
+}
+
+const logStep = (message) => {
+  const spinner = ora(chalk.greenBright(message)).start()
+  return spinner
 }
 
 // Utility function to capitalize the first letter of a string
@@ -303,51 +312,65 @@ const generateGoStructs = (apiJson) => {
   return `// Auto-generated File - BSD\n\npackage api\n\n${allStructs.join('\n\n')}`
 }
 
+console.log(
+  chalk.blueBright(`
+    ███╗░░░███╗░█████╗░██╗░░██╗███████╗  ██████╗░░██████╗██████╗░
+    ████╗░████║██╔══██╗██║░██╔╝██╔════╝  ██╔══██╗██╔════╝██╔══██╗
+    ██╔████╔██║███████║█████═╝░█████╗░░  ██████╦╝╚█████╗░██║░░██║
+    ██║╚██╔╝██║██╔══██║██╔═██╗░██╔══╝░░  ██╔══██╗░╚═══██╗██║░░██║
+    ██║░╚═╝░██║██║░░██║██║░╚██╗███████╗  ██████╦╝██████╔╝██████╔╝
+    ╚═╝░░░░░╚═╝╚═╝░░╚═╝╚═╝░░╚═╝╚══════╝  ╚═════╝░╚═════╝░╚═════╝░ 
+`)
+)
+
 // Main function to generate files
 const main = () => {
-  // Read and parse the OpenAPI JSON
+  const spinner = logStep('Parsing OpenAPI JSON')
   const apiJson = JSON.parse(fs.readFileSync(apiFilePath, 'utf8'))
+  spinner.succeed(chalk.green('Successfully parsed OpenAPI JSON'))
 
   // Web & Native
+  const spinner2 = logStep('Generating files')
   const generatedTypes = generateTypes(apiJson)
   const generatedApiClient = generateApiClient(apiJson)
   const generatedQueries = generateQueries(apiJson)
   const outputQueriesFile = 'queries.ts'
+  spinner2.succeed(chalk.green('Generated files'))
 
   // Web
+  const spinner3 = logStep('Writing files to Web App')
   fs.mkdirSync(output1Dir, { recursive: true })
   fs.writeFileSync(path.join(output1Dir, outputTypesFile), generatedTypes, 'utf8')
-  console.log(`Generated types at ${path.join(output1Dir, outputTypesFile)}`)
   fs.writeFileSync(path.join(output1Dir, outputBSDFile), generatedApiClient, 'utf8')
-  console.log(`Generated API client at ${path.join(output1Dir, outputBSDFile)}`)
   fs.writeFileSync(path.join(output1Dir, outputQueriesFile), generatedQueries, 'utf8')
-  console.log(`Generated queries at ${path.join(output1Dir, outputQueriesFile)}`)
   const destination1RequestPath = path.join(output1Dir, 'request.ts')
   fs.copyFileSync(requestFilePath, destination1RequestPath)
-  console.log(`Copied request.ts to ${destination1RequestPath}`)
+  spinner3.succeed(chalk.green(`Copied files into ${output1Dir}`))
 
   // Native
+  const spinner4 = logStep('Writing files to Native App')
   fs.mkdirSync(output2Dir, { recursive: true })
   fs.writeFileSync(path.join(output2Dir, outputTypesFile), generatedTypes, 'utf8')
-  console.log(`Generated types at ${path.join(output2Dir, outputTypesFile)}`)
   fs.writeFileSync(path.join(output2Dir, outputBSDFile), generatedApiClient, 'utf8')
-  console.log(`Generated API client at ${path.join(output2Dir, outputBSDFile)}`)
   fs.writeFileSync(path.join(output2Dir, outputQueriesFile), generatedQueries, 'utf8')
-  console.log(`Generated queries at ${path.join(output2Dir, outputQueriesFile)}`)
+  spinner4.succeed(chalk.green(`Copied & Configured files into ${output2Dir}`))
+
   // Update request.ts for Native
   const requestContent = fs.readFileSync(requestFilePath, 'utf8')
   const updatedRequestContent = requestContent.replace("const BASE_URL = ''", `const BASE_URL = '${origin}'`)
   const destination2RequestPath = path.join(output2Dir, 'request.ts')
   fs.writeFileSync(destination2RequestPath, updatedRequestContent, 'utf8')
-  console.log(`Updated and copied request.ts to ${destination2RequestPath}`)
 
   // Go
+  const spinner5 = logStep('Generating Go structs')
   const generatedGoStructs = generateGoStructs(apiJson)
-  const goOutputDir = path.join(__dirname, '../server/api')
+  const goOutputDir = path.join(__dirname, outputDirGo)
   fs.mkdirSync(goOutputDir, { recursive: true })
   const goOutputFile = path.join(goOutputDir, 'types.go')
   fs.writeFileSync(goOutputFile, generatedGoStructs, 'utf8')
-  console.log(`Generated Go structs at ${goOutputFile}`)
+  spinner5.succeed(chalk.green(`Generated Go structs in ${outputDirGo + '/types.go'}`))
+
+  log(chalk.green('\nDone!'))
 }
 
 main()

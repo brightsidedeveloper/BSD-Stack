@@ -1,5 +1,7 @@
 {
   "dependencies": {
-    "dotenv": "^16.4.7"
+    "chalk": "^4.1.2",
+    "dotenv": "^16.4.7",
+    "ora": "^5.4.1"
   }
 }

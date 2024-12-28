@@ -1,23 +1,25 @@
-/**
- * Auto-generated File - BSD
- */
 
-export type v1UsersResponse = {
+  /**
+   * Auto-generated File - BSD
+   */
+  
+  export type v1UsersResponse = {
   users?: Array<{
-    id: string
-    email: string
-    createdAt: string
-  }>
+  id: string;
+  email: string;
+  createdAt: string;
+}>;
 }
 
 export type v1HealthStatusRequest = {
-  health: number
+  health: number;
 }
 
 export type v1HealthStatusResponse = {
-  status: string
+  status: string;
 }
 
-export type v1HealthParams = {
-  awesome?: boolean
+  export type v1HealthParams = {
+  awesome?: boolean;
 }
+  
