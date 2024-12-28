@@ -29,8 +29,8 @@ export default function App() {
               email,
               password,
             })
-            .then(({ id }) => {
-              alert(`User created with id: ${id}`)
+            .then(({ token }) => {
+              alert(`User created with session: ${token}`)
               qc.invalidateQueries(createV1UsersQuery())
             })
             .catch((e) => {
@@ -48,8 +48,8 @@ export default function App() {
               email,
               password,
             })
-            .then(({ id }) => {
-              alert(`User created with id: ${id}`)
+            .then(({ token }) => {
+              alert(`User logged in with session: ${token}`)
               qc.invalidateQueries(createV1UsersQuery())
             })
             .catch((e) => {

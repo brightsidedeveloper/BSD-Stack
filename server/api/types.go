@@ -13,10 +13,6 @@ type V1UserSignUpRequest struct {
   Password string `json:"password"`
 }
 
-type V1UserSignUpResponse struct {
-  Id string `json:"id"`
-}
-
 type V1UsersResponse struct {
   Users []V1UsersResponseUsers `json:"users"`
 }
@@ -26,8 +22,8 @@ type V1UserLoginRequest struct {
   Password string `json:"password"`
 }
 
-type V1UserLoginResponse struct {
-  Id string `json:"id"`
+type V1UserAuthResponse struct {
+  Token string `json:"token"`
 }
 
 type V1HealthStatusRequest struct {

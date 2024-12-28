@@ -4,11 +4,16 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"go-pmp/api"
+	"go-pmp/internal/session"
 	"net/http"
+	"os"
 	"regexp"
+	"strings"
 	"time"
 
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -62,7 +67,7 @@ func (h *Handler) SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.JSON.Write(w, http.StatusCreated, api.V1UserSignUpResponse{Id: id})
+	writeJWT(w, h, id)
 }
 func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	var req api.V1UserLoginRequest
@@ -94,5 +99,85 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.JSON.Write(w, http.StatusOK, api.V1UserLoginResponse{Id: id})
+	writeJWT(w, h, id)
+}
+
+func (h *Handler) AuthMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		jwtSecret := os.Getenv("JWT_SECRET")
+		if jwtSecret == "" {
+			h.JSON.Error(w, http.StatusInternalServerError, "Internal server error")
+			return
+		}
+
+		var tokenString string
+
+		cookie, err := r.Cookie("access_token")
+		if err == nil {
+			tokenString = cookie.Value
+		}
+
+		authHeader := r.Header.Get("Authorization")
+		if strings.HasPrefix(authHeader, "Bearer ") {
+			tokenString = strings.TrimPrefix(authHeader, "Bearer ")
+		}
+
+		if tokenString == "" {
+			h.JSON.Error(w, http.StatusUnauthorized, "Unauthorized")
+			return
+		}
+
+		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+				return nil, jwt.ErrSignatureInvalid
+			}
+			return []byte(jwtSecret), nil
+		})
+		if err != nil || !token.Valid {
+			h.JSON.Error(w, http.StatusUnauthorized, "Invalid token")
+			return
+		}
+
+		claims, ok := token.Claims.(jwt.MapClaims)
+		if !ok {
+			h.JSON.Error(w, http.StatusUnauthorized, "Invalid token claims")
+			return
+		}
+
+		userID, ok := claims[session.ClaimsUserKey].(string)
+		if !ok {
+			h.JSON.Error(w, http.StatusUnauthorized, "Invalid user ID")
+			return
+		}
+
+		ctx := session.SetUserID(r.Context(), userID)
+
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
+
+func writeJWT(w http.ResponseWriter, h *Handler, userID string) {
+	token, err := session.GenJWT(userID)
+	if err != nil {
+		fmt.Println(err)
+		h.JSON.Error(w, http.StatusInternalServerError, "Failed to generate token")
+		return
+	}
+
+	devMode := os.Getenv("DEV") == "true"
+
+	// Web
+	http.SetCookie(w, &http.Cookie{
+		Name:     session.AccessTokenName,
+		Value:    token,
+		HttpOnly: true,
+		Secure:   !devMode,
+		Path:     "/",
+		MaxAge:   86400,
+	})
+
+	// Native
+	h.JSON.Write(w, http.StatusOK, api.V1UserAuthResponse{
+		Token: token,
+	})
 }

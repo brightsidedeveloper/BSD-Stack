@@ -3,11 +3,17 @@ package handler
 import (
 	"encoding/json"
 	"go-pmp/api"
+	"go-pmp/internal/session"
 	"net/http"
 )
 
 func (h *Handler) GetHealthStatus(w http.ResponseWriter, r *http.Request) {
-	h.JSON.Success(w, api.V1HealthStatusResponse{Status: "ok"})
+	userID, ok := session.GetUserID(r.Context())
+	if !ok {
+		h.JSON.Error(w, http.StatusUnauthorized, "Not logged in")
+		return
+	}
+	h.JSON.Success(w, api.V1HealthStatusResponse{Status: userID})
 }
 
 func (h *Handler) PostHealthStatus(w http.ResponseWriter, r *http.Request) {

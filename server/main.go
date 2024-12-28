@@ -94,8 +94,12 @@ func addV1Routes(r *chi.Mux, h *handler.Handler) {
 	r.Post("/auth/login", h.Login)
 	r.Post("/auth/signup", h.SignUp)
 	r.Post("/health", h.PostHealthStatus)
-	r.Get("/health", h.GetHealthStatus)
 	r.Get("/users", h.GetUsers)
+
+	r.Group(func(r chi.Router) {
+		r.Use(h.AuthMiddleware)
+		r.Get("/health", h.GetHealthStatus)
+	})
 }
 
 func proxyVite(r *chi.Mux) {

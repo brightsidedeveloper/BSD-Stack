@@ -1,85 +1,72 @@
+/**
+ * Auto-generated File - BSD
+ */
+
+import { get, post } from './request'
+import {
+  v1UserSignUpRequest,
+  v1UsersResponse,
+  v1UserLoginRequest,
+  v1UserAuthResponse,
+  v1HealthStatusRequest,
+  v1HealthStatusResponse,
+  v1HealthParams,
+} from './types'
+
+class Get {
+  /**
+   * Get a list of users
+   * @returns {Promise<v1UsersResponse>}
+   */
+  static async v1Users() {
+    return get<v1UsersResponse>(`/api/v1/users`)
+  }
 
   /**
-   * Auto-generated File - BSD
+   * Check the health of the API
+   * @returns {Promise<v1HealthStatusResponse>}
    */
-
-  import { get, post, put, patch, del } from './request';
-  import { v1UserSignUpRequest, v1UserSignUpResponse, v1UsersResponse, v1UserLoginRequest, v1UserLoginResponse, v1HealthStatusRequest, v1HealthStatusResponse, v1HealthParams } from './types';
-
-  
-  class Get {
-    
-        /**
-         * Get a list of users
-         * @returns {Promise<v1UsersResponse>}
-         */
-        static async v1Users() {
-          return get<v1UsersResponse>(`/api/v1/users`);
-        }
-      
-  
-        /**
-         * Check the health of the API
-         * @returns {Promise<v1HealthStatusResponse>}
-         */
-        static async v1Health(params: v1HealthParams) {
-          return get<v1HealthStatusResponse>(`/api/v1/health`, params);
-        }
-      
+  static async v1Health(params: v1HealthParams) {
+    return get<v1HealthStatusResponse>(`/api/v1/health`, params)
   }
-  
+}
 
-  class Post {
-    
-        /**
-         * Create a new user
-         * @returns {Promise<v1UserSignUpResponse>}
-         */
-        static async v1Signup(params: v1UserSignUpRequest) {
-          return post<v1UserSignUpResponse>(`/api/v1/auth/signup`, params);
-        }
-      
-  
-        /**
-         * Login a user
-         * @returns {Promise<v1UserLoginResponse>}
-         */
-        static async v1Login(params: v1UserLoginRequest) {
-          return post<v1UserLoginResponse>(`/api/v1/auth/login`, params);
-        }
-      
-  
-        /**
-         * Submit health data
-         * @returns {Promise<v1HealthStatusResponse>}
-         */
-        static async v1Health(params: v1HealthStatusRequest) {
-          return post<v1HealthStatusResponse>(`/api/v1/health`, params);
-        }
-      
+class Post {
+  /**
+   * Create a new user
+   * @returns {Promise<v1UserAuthResponse>}
+   */
+  static async v1Signup(params: v1UserSignUpRequest) {
+    return post<v1UserAuthResponse>(`/api/v1/auth/signup`, params)
   }
-  
 
-  class Put {
-    
+  /**
+   * Login a user
+   * @returns {Promise<v1UserAuthResponse>}
+   */
+  static async v1Login(params: v1UserLoginRequest) {
+    return post<v1UserAuthResponse>(`/api/v1/auth/login`, params)
   }
-  
 
-  class Patch {
-    
+  /**
+   * Submit health data
+   * @returns {Promise<v1HealthStatusResponse>}
+   */
+  static async v1Health(params: v1HealthStatusRequest) {
+    return post<v1HealthStatusResponse>(`/api/v1/health`, params)
   }
-  
+}
 
-  class Delete {
-    
-  }
-  
+class Put {}
 
-  export default class ez {
-    static get = Get;
-    static post = Post;
-    static put = Put;
-    static patch = Patch;
-    static delete = Delete;
-  }
-  
+class Patch {}
+
+class Delete {}
+
+export default class ez {
+  static get = Get
+  static post = Post
+  static put = Put
+  static patch = Patch
+  static delete = Delete
+}

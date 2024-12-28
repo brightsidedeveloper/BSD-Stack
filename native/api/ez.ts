@@ -4,7 +4,7 @@
    */
 
   import { get, post, put, patch, del } from './request';
-  import { v1UserSignUpRequest, v1UserSignUpResponse, v1UsersResponse, v1UserLoginRequest, v1UserLoginResponse, v1HealthStatusRequest, v1HealthStatusResponse, v1HealthParams } from './types';
+  import { v1UserSignUpRequest, v1UsersResponse, v1UserLoginRequest, v1UserAuthResponse, v1HealthStatusRequest, v1HealthStatusResponse, v1HealthParams } from './types';
 
   
   class Get {
@@ -33,19 +33,19 @@
     
         /**
          * Create a new user
-         * @returns {Promise<v1UserSignUpResponse>}
+         * @returns {Promise<v1UserAuthResponse>}
          */
         static async v1Signup(params: v1UserSignUpRequest) {
-          return post<v1UserSignUpResponse>(`/api/v1/auth/signup`, params);
+          return post<v1UserAuthResponse>(`/api/v1/auth/signup`, params);
         }
       
   
         /**
          * Login a user
-         * @returns {Promise<v1UserLoginResponse>}
+         * @returns {Promise<v1UserAuthResponse>}
          */
         static async v1Login(params: v1UserLoginRequest) {
-          return post<v1UserLoginResponse>(`/api/v1/auth/login`, params);
+          return post<v1UserAuthResponse>(`/api/v1/auth/login`, params);
         }
       
   

@@ -8,10 +8,6 @@
   password: string;
 }
 
-export type v1UserSignUpResponse = {
-  id?: string;
-}
-
 export type v1UsersResponse = {
   users?: Array<{
   id: string;
@@ -25,8 +21,8 @@ export type v1UserLoginRequest = {
   password: string;
 }
 
-export type v1UserLoginResponse = {
-  id?: string;
+export type v1UserAuthResponse = {
+  token?: string;
 }
 
 export type v1HealthStatusRequest = {
