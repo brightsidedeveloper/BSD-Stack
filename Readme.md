@@ -43,10 +43,9 @@ I am using Docker to Deploy this app
 - [ ] Implement Microservice gen & support?
 
 
-# GOAL 
+# GOAL - WORKFLOW
 
-Use this to... 
-Init system with terraform. Implement migrations and swagger spec in the dashboard.
+Init this system with terraform. Implement migrations and swagger spec in the dashboard.
 Implement required microservices. Generate API. Implement backend handlers.
 Implement client. Deploy on Kubernetes.
 
