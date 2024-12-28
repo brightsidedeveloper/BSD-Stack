@@ -41,6 +41,4 @@ I am using Docker to Deploy this app
 - [ ] Add Kubernetes Support
 - [ ] Add NFS Support
 - [ ] Implement Terraform
-- [ ] Create Landing Page
-- [ ] Make a Course
-- [ ] Add a Price Tag
+- [ ] Implement Microservice gen & support?
