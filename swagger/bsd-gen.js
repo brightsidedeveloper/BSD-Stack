@@ -1,11 +1,18 @@
 const fs = require('fs')
 const path = require('path')
+require('dotenv').config()
 
 const apiFilePath = './api.json' // Path to your OpenAPI JSON file
-const outputDir = '../client/src/api' // Output directory for generated files
+const output1Dir = '../web/src/api' // Output directory for generated files
+const output2Dir = '../native/api' // Output directory for generated files
 const outputBSDFile = 'ez.ts' // API client file name
 const outputTypesFile = 'types.ts' // Generated types file name
 const requestFilePath = './util/request.ts' // Path to the request.ts file
+const origin = process.env.ORIGIN
+if (!origin) {
+  console.error('Please set the ORIGIN environment variable')
+  process.exit(1)
+}
 
 // Utility function to capitalize the first letter of a string
 const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1)
@@ -301,40 +308,40 @@ const main = () => {
   // Read and parse the OpenAPI JSON
   const apiJson = JSON.parse(fs.readFileSync(apiFilePath, 'utf8'))
 
-  // Generate types and API client
+  // Web & Native
   const generatedTypes = generateTypes(apiJson)
   const generatedApiClient = generateApiClient(apiJson)
   const generatedQueries = generateQueries(apiJson)
-
-  // Ensure output directory exists
-  fs.mkdirSync(outputDir, { recursive: true })
-
-  // Write the types file
-  fs.writeFileSync(path.join(outputDir, outputTypesFile), generatedTypes, 'utf8')
-  console.log(`Generated types at ${path.join(outputDir, outputTypesFile)}`)
-
-  // Write the API client file
-  fs.writeFileSync(path.join(outputDir, outputBSDFile), generatedApiClient, 'utf8')
-  console.log(`Generated API client at ${path.join(outputDir, outputBSDFile)}`)
-
-  // Write the queries file
   const outputQueriesFile = 'queries.ts'
-  fs.writeFileSync(path.join(outputDir, outputQueriesFile), generatedQueries, 'utf8')
-  console.log(`Generated queries at ${path.join(outputDir, outputQueriesFile)}`)
 
-  // Copy the request.ts file to the output directory
-  const destinationRequestPath = path.join(outputDir, 'request.ts')
-  fs.copyFileSync(requestFilePath, destinationRequestPath)
-  console.log(`Copied request.ts to ${destinationRequestPath}`)
+  // Web
+  fs.mkdirSync(output1Dir, { recursive: true })
+  fs.writeFileSync(path.join(output1Dir, outputTypesFile), generatedTypes, 'utf8')
+  console.log(`Generated types at ${path.join(output1Dir, outputTypesFile)}`)
+  fs.writeFileSync(path.join(output1Dir, outputBSDFile), generatedApiClient, 'utf8')
+  console.log(`Generated API client at ${path.join(output1Dir, outputBSDFile)}`)
+  fs.writeFileSync(path.join(output1Dir, outputQueriesFile), generatedQueries, 'utf8')
+  console.log(`Generated queries at ${path.join(output1Dir, outputQueriesFile)}`)
+  const destination1RequestPath = path.join(output1Dir, 'request.ts')
+  fs.copyFileSync(requestFilePath, destination1RequestPath)
+  console.log(`Copied request.ts to ${destination1RequestPath}`)
 
-  // Generate Go structs
+  // Native
+  fs.mkdirSync(output2Dir, { recursive: true })
+  fs.writeFileSync(path.join(output2Dir, outputTypesFile), generatedTypes, 'utf8')
+  console.log(`Generated types at ${path.join(output2Dir, outputTypesFile)}`)
+  fs.writeFileSync(path.join(output2Dir, outputBSDFile), generatedApiClient, 'utf8')
+  console.log(`Generated API client at ${path.join(output2Dir, outputBSDFile)}`)
+  fs.writeFileSync(path.join(output2Dir, outputQueriesFile), generatedQueries, 'utf8')
+  console.log(`Generated queries at ${path.join(output2Dir, outputQueriesFile)}`)
+  const destination2RequestPath = path.join(output2Dir, 'request.ts')
+  fs.copyFileSync(requestFilePath, destination2RequestPath)
+  console.log(`Copied request.ts to ${destination2RequestPath}`)
+
+  // Go
   const generatedGoStructs = generateGoStructs(apiJson)
-
-  // Ensure output directory exists
   const goOutputDir = path.join(__dirname, '../server/api')
   fs.mkdirSync(goOutputDir, { recursive: true })
-
-  // Write the Go structs to a file
   const goOutputFile = path.join(goOutputDir, 'types.go')
   fs.writeFileSync(goOutputFile, generatedGoStructs, 'utf8')
   console.log(`Generated Go structs at ${goOutputFile}`)
