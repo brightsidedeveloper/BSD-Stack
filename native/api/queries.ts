@@ -5,7 +5,7 @@
 
 import { queryOptions } from '@tanstack/react-query';
 import ez from './ez';
-import { v1HealthParams, v1UsersResponse, v1HealthStatusRequest, v1HealthStatusResponse } from './types';
+import { v1HealthParams, v1UserSignUpRequest, v1UserSignUpResponse, v1UsersResponse, v1UserLoginRequest, v1UserLoginResponse, v1HealthStatusRequest, v1HealthStatusResponse } from './types';
 
 
 export function createV1UsersQuery() {

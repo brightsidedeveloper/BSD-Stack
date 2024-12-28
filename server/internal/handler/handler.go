@@ -1,7 +1,9 @@
 package handler
 
-import "go-pmp/db"
+import (
+	"database/sql"
+)
 
 type Handler struct {
-	DB *db.Postgres
+	DB *sql.DB
 }

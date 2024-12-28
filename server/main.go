@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"go-pmp/db"
 	"go-pmp/internal/handler"
 	"log"
@@ -37,9 +38,7 @@ func main() {
 	h := &handler.Handler{DB: db}
 
 	v1Router := chi.NewRouter()
-
 	addV1Routes(v1Router, h)
-
 	r.Mount("/api/v1", v1Router)
 
 	devMode := os.Getenv("DEV") == "true"
@@ -61,7 +60,7 @@ func loadEnv() {
 	}
 }
 
-func connectDB() *db.Postgres {
+func connectDB() *sql.DB {
 	dsn := os.Getenv("DSN")
 	if dsn == "" {
 		log.Fatal("$DSN must be set")
@@ -89,6 +88,8 @@ func addCors(r *chi.Mux) {
 }
 
 func addV1Routes(r *chi.Mux, h *handler.Handler) {
+	r.Post("/auth/login", h.Login)
+	r.Post("/auth/signup", h.SignUp)
 	r.Post("/health", h.PostHealthStatus)
 	r.Get("/health", h.GetHealthStatus)
 	r.Get("/users", h.GetUsers)

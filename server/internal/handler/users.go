@@ -9,7 +9,7 @@ import (
 func (h *Handler) GetUsers(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
 
-	rows, err := h.DB.Query(ctx, "SELECT id, email, created_at FROM auth.users")
+	rows, err := h.DB.QueryContext(ctx, "SELECT id, email, created_at FROM auth.users")
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

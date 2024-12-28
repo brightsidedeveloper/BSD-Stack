@@ -8,8 +8,26 @@ type V1UsersResponseUsers struct {
   CreatedAt string `json:"createdAt"`
 }
 
+type V1UserSignUpRequest struct {
+  Email string `json:"email"`
+  Password string `json:"password"`
+}
+
+type V1UserSignUpResponse struct {
+  Id string `json:"id"`
+}
+
 type V1UsersResponse struct {
   Users []V1UsersResponseUsers `json:"users"`
+}
+
+type V1UserLoginRequest struct {
+  Email string `json:"email"`
+  Password string `json:"password"`
+}
+
+type V1UserLoginResponse struct {
+  Id string `json:"id"`
 }
 
 type V1HealthStatusRequest struct {

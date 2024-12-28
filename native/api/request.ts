@@ -25,7 +25,20 @@ export const get = async <T = unknown>(
     ...options,
     method: 'GET',
   })
-  if (!response.ok) throw new Error(`Error: ${response.statusText}`)
+  if (!response.ok) {
+    let errorMessage = response.statusText
+    try {
+      const errorResponse = await response.json()
+      if (errorResponse.error) {
+        errorMessage = errorResponse.error // Extract the custom error message
+      }
+    } catch (err) {
+      console.warn('Failed to parse error response:', err)
+    }
+
+    throw new Error(errorMessage)
+  }
+
   return response.json() as Promise<T>
 }
 
@@ -40,7 +53,20 @@ export const post = async <T = unknown>(endpoint: string, body: unknown = {}, op
     },
     body: JSON.stringify(body),
   })
-  if (!response.ok) throw new Error(`Error: ${response.statusText}`)
+  if (!response.ok) {
+    let errorMessage = response.statusText
+    try {
+      const errorResponse = await response.json()
+      if (errorResponse.error) {
+        errorMessage = errorResponse.error // Extract the custom error message
+      }
+    } catch (err) {
+      console.warn('Failed to parse error response:', err)
+    }
+
+    throw new Error(errorMessage)
+  }
+
   return response.json() as Promise<T>
 }
 
@@ -55,7 +81,20 @@ export const put = async <T = unknown>(endpoint: string, body: unknown, options:
     },
     body: JSON.stringify(body),
   })
-  if (!response.ok) throw new Error(`Error: ${response.statusText}`)
+  if (!response.ok) {
+    let errorMessage = response.statusText
+    try {
+      const errorResponse = await response.json()
+      if (errorResponse.error) {
+        errorMessage = errorResponse.error // Extract the custom error message
+      }
+    } catch (err) {
+      console.warn('Failed to parse error response:', err)
+    }
+
+    throw new Error(errorMessage)
+  }
+
   return response.json() as Promise<T>
 }
 
@@ -70,7 +109,20 @@ export const patch = async <T = unknown>(endpoint: string, body: unknown, option
     },
     body: JSON.stringify(body),
   })
-  if (!response.ok) throw new Error(`Error: ${response.statusText}`)
+  if (!response.ok) {
+    let errorMessage = response.statusText
+    try {
+      const errorResponse = await response.json()
+      if (errorResponse.error) {
+        errorMessage = errorResponse.error // Extract the custom error message
+      }
+    } catch (err) {
+      console.warn('Failed to parse error response:', err)
+    }
+
+    throw new Error(errorMessage)
+  }
+
   return response.json() as Promise<T>
 }
 
@@ -84,6 +136,19 @@ export const del = async <T = unknown>(
     ...options,
     method: 'DELETE',
   })
-  if (!response.ok) throw new Error(`Error: ${response.statusText}`)
+  if (!response.ok) {
+    let errorMessage = response.statusText
+    try {
+      const errorResponse = await response.json()
+      if (errorResponse.error) {
+        errorMessage = errorResponse.error // Extract the custom error message
+      }
+    } catch (err) {
+      console.warn('Failed to parse error response:', err)
+    }
+
+    throw new Error(errorMessage)
+  }
+
   return response.json() as Promise<T>
 }
