@@ -6,7 +6,7 @@ export interface FetchOptions extends RequestInit {
   queryParams?: Record<string, unknown>
 }
 
-const BASE_URL = '' // Set a default base URL if needed.
+const BASE_URL = ''
 
 const buildQueryString = (params: Record<string, unknown> = {}): string => {
   const query = Object.entries(params)

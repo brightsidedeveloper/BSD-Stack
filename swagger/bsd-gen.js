@@ -334,9 +334,12 @@ const main = () => {
   console.log(`Generated API client at ${path.join(output2Dir, outputBSDFile)}`)
   fs.writeFileSync(path.join(output2Dir, outputQueriesFile), generatedQueries, 'utf8')
   console.log(`Generated queries at ${path.join(output2Dir, outputQueriesFile)}`)
+  // Update request.ts for Native
+  const requestContent = fs.readFileSync(requestFilePath, 'utf8')
+  const updatedRequestContent = requestContent.replace("const BASE_URL = ''", `const BASE_URL = '${origin}'`)
   const destination2RequestPath = path.join(output2Dir, 'request.ts')
-  fs.copyFileSync(requestFilePath, destination2RequestPath)
-  console.log(`Copied request.ts to ${destination2RequestPath}`)
+  fs.writeFileSync(destination2RequestPath, updatedRequestContent, 'utf8')
+  console.log(`Updated and copied request.ts to ${destination2RequestPath}`)
 
   // Go
   const generatedGoStructs = generateGoStructs(apiJson)

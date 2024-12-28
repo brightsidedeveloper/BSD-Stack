@@ -6,7 +6,7 @@ export interface FetchOptions extends RequestInit {
   queryParams?: Record<string, unknown>
 }
 
-const BASE_URL = 'https://8.brightsideserve.com' // Set a default base URL if needed.
+const BASE_URL = 'https://8.brightsideserve.com'
 
 const buildQueryString = (params: Record<string, unknown> = {}): string => {
   const query = Object.entries(params)
@@ -25,7 +25,6 @@ export const get = async <T = unknown>(
     ...options,
     method: 'GET',
   })
-  console.log(response)
   if (!response.ok) throw new Error(`Error: ${response.statusText}`)
   return response.json() as Promise<T>
 }
