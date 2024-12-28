@@ -47,7 +47,7 @@ I am using Docker to Deploy this app
 
 Clone repo. Implement migrations and swagger spec in the dashboard.
 Implement required microservices. Generate API. Implement backend handlers.
-Implement client. Deploy on Cloud or Self-Hosted Kubernetes with final Terraform
+Implement client. Deploy on Cloud or Self-Hosted Kubernetes with Terraform
 
 
 
