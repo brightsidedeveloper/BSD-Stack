@@ -1,0 +1,45 @@
+# BSD Stack
+
+# Swagger
+
+I am using a swagger OpenAPI3 file with a generator script to auto-magically
+Implement all of the Types, Data Fetching, TanStack Queries & S3 Requirements of the App
+
+# Go
+
+The backend is written in Go and serves the frontend, as well as all the endpoints.
+
+# React 19 & Vite 6 [ with TanStack ]
+
+This app serves a Typescript React app with TanStack Router and TanStack Query
+With all the queries and api calls auto generated.
+
+# Expo React Native
+
+This app also includes a Native app using Expo Router and TanStack Query
+Also with all queries and api calls auto generated.
+
+# Postgres
+
+Hosts a Postgres Service with soon Authentication and Dashboard Support
+
+# Minio
+
+Hosts a Minio service in Docker allowing for complete S3 integration for Object Storage
+
+# Dockerized
+
+I am using Docker to Deploy this app
+
+# TODO
+
+- [ ] Implement Auth/OAuth Support
+- [ ] Implement Dashboard for Easy Postgres Migrations
+- [ ] Implement Dashboard for Easier OpenAPI Configuration
+- [ ] Improve Auto Code Generation and add Dashboard Support
+- [ ] Add Kubernetes Support
+- [ ] Add NFS Support
+- [ ] Implement Terraform
+- [ ] Create Landing Page
+- [ ] Make a Course
+- [ ] Add a Price Tag
