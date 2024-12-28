@@ -1,14 +1,14 @@
 /**
  * Auto-generated File - BSD
  */
-
+// @ts-expect-error - don't need module in this file
 import * as SecureStore from 'expo-secure-store'
 
 export interface FetchOptions extends RequestInit {
   queryParams?: Record<string, unknown>
 }
 
-const BASE_URL = 'http://192.168.86.244:8888'
+const BASE_URL = ''
 
 const buildQueryString = (params: Record<string, unknown> = {}): string => {
   const query = Object.entries(params)

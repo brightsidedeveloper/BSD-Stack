@@ -12,7 +12,8 @@ const output2Dir = './native/api'
 const outputDirGo = '../server/api'
 const outputBSDFile = 'ez.ts'
 const outputTypesFile = 'types.ts'
-const requestFilePath = './swagger/util/request.ts'
+const webRequestFilePath = './swagger/util/request.web.ts'
+const nativeRequestFilePath = './swagger/util/request.native.ts'
 const origin = process.env.SWAG_ORIGIN
 if (!origin) {
   console.error(chalk.red('Error: Please set the ORIGIN environment variable'))
@@ -357,7 +358,7 @@ const main = () => {
   fs.writeFileSync(path.join(output1Dir, outputBSDFile), generatedApiClient, 'utf8')
   fs.writeFileSync(path.join(output1Dir, outputQueriesFile), generatedQueries, 'utf8')
   const destination1RequestPath = path.join(output1Dir, 'request.ts')
-  fs.copyFileSync(requestFilePath, destination1RequestPath)
+  fs.copyFileSync(webRequestFilePath, destination1RequestPath)
   spinner3.succeed(chalk.green(`Copied files into ${output1Dir}`))
 
   // Native
@@ -369,8 +370,10 @@ const main = () => {
   spinner4.succeed(chalk.green(`Copied & Configured files into ${output2Dir}`))
 
   // Update request.ts for Native
-  const requestContent = fs.readFileSync(requestFilePath, 'utf8')
-  const updatedRequestContent = requestContent.replace("const BASE_URL = ''", `const BASE_URL = '${origin}'`)
+  const requestContent = fs.readFileSync(nativeRequestFilePath, 'utf8')
+  const updatedRequestContent = requestContent
+    .replace("const BASE_URL = ''", `const BASE_URL = '${origin}'`)
+    .replace("// @ts-expect-error - don't need module in this file", '')
   const destination2RequestPath = path.join(output2Dir, 'request.ts')
   fs.writeFileSync(destination2RequestPath, updatedRequestContent, 'utf8')
 

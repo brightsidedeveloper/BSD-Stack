@@ -1,13 +1,14 @@
-import { Image, StyleSheet, Platform } from 'react-native'
-
+import { Image, StyleSheet, Button, Alert } from 'react-native'
 import { HelloWave } from '@/components/HelloWave'
 import ParallaxScrollView from '@/components/ParallaxScrollView'
 import { ThemedText } from '@/components/ThemedText'
 import { ThemedView } from '@/components/ThemedView'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { createV1HealthQuery } from '@/api/queries'
+import ez from '@/api/ez'
 
 export default function HomeScreen() {
+  const qc = useQueryClient()
   const { data, error } = useQuery(createV1HealthQuery({ awesome: true }))
 
   console.log(data, error)
@@ -23,15 +24,19 @@ export default function HomeScreen() {
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="subtitle">Step 1: {data?.status}</ThemedText>
         <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes. Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
+          <Button
+            title="Login"
+            onPress={() => {
+              ez.post
+                .v1Login({ email: 'tim@brightsidedeveloper.com', password: 'aaaaaaaa' })
+                .then(async ({ token }) => {
+                  qc.invalidateQueries(createV1HealthQuery({ awesome: true }))
+                })
+                .catch((err) => {
+                  Alert.alert('Login failed2', err.message)
+                })
+            }}
+          />
         </ThemedText>
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
