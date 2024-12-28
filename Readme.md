@@ -41,3 +41,14 @@ I am using Docker to Deploy this app
 - [ ] Add Kubernetes & NFS Support
 - [ ] Implement Terraform 
 - [ ] Implement Microservice gen & support?
+
+
+# GOAL 
+
+Use this to... 
+Deploy system with terraform. Implement migrations and swagger spec.
+Implement required microservices. Generate API. Implement backend handlers.
+Implement client.
+
+
+
