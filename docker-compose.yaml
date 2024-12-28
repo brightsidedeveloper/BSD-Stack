@@ -41,6 +41,7 @@ services:
     environment:
       PORT: ${PORT}
       DSN: ${DSN}
+      JWT_SECRET: ${JWT_SECRET}
       ORIGIN: ${ORIGIN}
       DIST_DIR: ${DIST_DIR}
       VITE_SERVER_URL: ${VITE_SERVER_URL}
