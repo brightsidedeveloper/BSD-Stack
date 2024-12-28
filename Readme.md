@@ -35,7 +35,7 @@ I am using Docker to Deploy this app
 # TODO
 
 - [ ] Implement Auth/OAuth Support
-- [ ] Implement Dashboard for Easy Postgres Migrations
+- [ ] Implement Dashboard for Easier Postgres Migrations & Viewing
 - [ ] Implement Dashboard for Easier OpenAPI Configuration
 - [ ] Improve Auto Code Generation and add Dashboard Support
 - [ ] Add Kubernetes Support
