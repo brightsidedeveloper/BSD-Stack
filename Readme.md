@@ -45,9 +45,9 @@ I am using Docker to Deploy this app
 
 # GOAL - WORKFLOW
 
-Init this system with terraform. Implement migrations and swagger spec in the dashboard.
+Clone repo. Implement migrations and swagger spec in the dashboard.
 Implement required microservices. Generate API. Implement backend handlers.
-Implement client. Deploy on Kubernetes.
+Implement client. Deploy on Cloud or Self-Hosted Kubernetes with final Terraform
 
 
 
