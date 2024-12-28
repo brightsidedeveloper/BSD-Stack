@@ -17,7 +17,7 @@ ddown:
 
 # SWAGGER
 
-API_JSON = ./swagger/api.json
+API_JSON = ./swagger/api.yaml
 BSD_GEN_SCRIPT = ./swagger/bsd-gen.js
 
 g-docs:
