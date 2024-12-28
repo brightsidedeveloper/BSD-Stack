@@ -37,8 +37,7 @@ I am using Docker to Deploy this app
 - [ ] Implement Auth/OAuth Support
 - [ ] Implement Dashboard for Easier Postgres Migrations & Viewing
 - [ ] Implement Dashboard for Easier OpenAPI Configuration
-- [ ] Improve Auto Code Generation and add Dashboard Support
-- [ ] Add Kubernetes Support
-- [ ] Add NFS Support
-- [ ] Implement Terraform
+- [ ] Improve Auto Code Generation and add Dashboard make Support
+- [ ] Add Kubernetes & NFS Support
+- [ ] Implement Terraform 
 - [ ] Implement Microservice gen & support?
