@@ -15,6 +15,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
+	"github.com/joho/godotenv"
 )
 
 type Test struct {
@@ -23,6 +24,8 @@ type Test struct {
 }
 
 func main() {
+
+	loadEnv()
 
 	db := connectDB()
 	defer db.Close()
@@ -48,6 +51,14 @@ func main() {
 	}
 
 	gracefullyServe(r)
+}
+
+func loadEnv() {
+	if err := godotenv.Load(); err != nil {
+		log.Println(".env file not found, assuming production mode")
+	} else {
+		log.Println(".env file loaded successfully")
+	}
 }
 
 func connectDB() *db.Postgres {

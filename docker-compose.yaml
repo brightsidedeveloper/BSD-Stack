@@ -21,13 +21,12 @@ services:
     ports:
       - '9000:9000'
       - '9001:9001'
-    env_file:
-      - .env
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
     volumes:
       - ./minio/data:/data
+    command: server /data --console-address ":9001"
 
   app:
     build:
@@ -39,7 +38,6 @@ services:
       - '8080:8080'
     depends_on:
       - db
-      - minio
     environment:
       PORT: ${PORT}
       DSN: ${DSN}
@@ -47,6 +45,9 @@ services:
       DIST_DIR: ${DIST_DIR}
       VITE_SERVER_URL: ${VITE_SERVER_URL}
       DEV: ${DEV}
+      MINIO_ENDPOINT: ${MINIO_ENDPOINT}
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
     volumes:
       - ./web/dist:/root/dist
 

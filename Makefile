@@ -4,7 +4,7 @@ export
 endif
 
 pg:
-	PGPASSWORD=$(PG_PASSWORD) psql -h localhost -U $(PG_USER) -d $(PG_DB)
+	PGPASSWORD=$(POSTGRES_PASSWORD) psql -h localhost -U $(POSTGRES_USER) -d $(POSTGRES_DB)
 
 mup:
 	migrate -path $(MIGRATIONS_PATH) -database $(DATABASE_URL) up
