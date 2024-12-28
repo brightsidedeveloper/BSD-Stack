@@ -2,7 +2,7 @@
 
 # Swagger
 
-I am using a swagger OpenAPI3 file with a generator script to auto-magically
+I am using a swagger (which is fitting with how swag this app is) OpenAPI3 file with a generator script to auto-magically
 Implement all of the Types, Data Fetching, TanStack Queries & S3 Requirements of the App
 
 # Go
