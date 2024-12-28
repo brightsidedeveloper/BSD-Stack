@@ -5,14 +5,14 @@ const ora = require('ora')
 const { log } = require('console')
 require('dotenv').config()
 
-const apiFilePath = './api.json' // Path to your OpenAPI JSON file
-const output1Dir = '../web/src/api' // Output directory for generated files
-const output2Dir = '../native/api' // Output directory for generated files
+const apiFilePath = './swagger/api.json' // Path to your OpenAPI JSON file
+const output1Dir = './web/src/api' // Output directory for generated files
+const output2Dir = './native/api' // Output directory for generated files
 const outputDirGo = '../server/api'
 const outputBSDFile = 'ez.ts' // API client file name
 const outputTypesFile = 'types.ts' // Generated types file name
-const requestFilePath = './util/request.ts' // Path to the request.ts file
-const origin = process.env.ORIGIN
+const requestFilePath = './swagger/util/request.ts' // Path to the request.ts file
+const origin = process.env.SWAG_ORIGIN
 if (!origin) {
   console.error(chalk.red('Error: Please set the ORIGIN environment variable'))
   process.exit(1)
@@ -364,11 +364,11 @@ const main = () => {
   // Go
   const spinner5 = logStep('Generating Go structs')
   const generatedGoStructs = generateGoStructs(apiJson)
-  const goOutputDir = path.join(__dirname, outputDirGo)
+  const goOutputDir = path.resolve(__dirname, outputDirGo)
   fs.mkdirSync(goOutputDir, { recursive: true })
   const goOutputFile = path.join(goOutputDir, 'types.go')
   fs.writeFileSync(goOutputFile, generatedGoStructs, 'utf8')
-  spinner5.succeed(chalk.green(`Generated Go structs in ${outputDirGo + '/types.go'}`))
+  spinner5.succeed(chalk.green(`Generated Go structs in ${outputDirGo.replace('.', '') + '/types.go'}`))
 
   log(chalk.green('\nDone!'))
 }
