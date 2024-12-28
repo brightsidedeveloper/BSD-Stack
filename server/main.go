@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"go-pmp/db"
 	"go-pmp/internal/handler"
+	"go-pmp/internal/util"
 	"log"
 	"net/http"
 	"net/http/httputil"
@@ -35,7 +36,9 @@ func main() {
 
 	addCors(r)
 
-	h := &handler.Handler{DB: db}
+	json := &util.JSON{}
+
+	h := &handler.Handler{DB: db, JSON: json}
 
 	v1Router := chi.NewRouter()
 	addV1Routes(v1Router, h)

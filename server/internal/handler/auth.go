@@ -22,23 +22,23 @@ func isValidEmail(email string) bool {
 func (h *Handler) SignUp(w http.ResponseWriter, r *http.Request) {
 	var req api.V1UserSignUpRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		api.ValidationError(w, "Invalid Request")
+		h.JSON.ValidationError(w, "Invalid Request")
 		return
 	}
 
 	if !isValidEmail(req.Email) {
-		api.ValidationError(w, "Invalid email")
+		h.JSON.ValidationError(w, "Invalid email")
 		return
 	}
 
 	if len(req.Password) < 8 {
-		api.ValidationError(w, "Password must be at least 8 characters.")
+		h.JSON.ValidationError(w, "Password must be at least 8 characters.")
 		return
 	}
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
-		api.Error(w, http.StatusInternalServerError, "Failed to hash password")
+		h.JSON.Error(w, http.StatusInternalServerError, "Failed to hash password")
 		return
 	}
 
@@ -51,23 +51,23 @@ func (h *Handler) SignUp(w http.ResponseWriter, r *http.Request) {
 	err = h.DB.QueryRowContext(ctx, query, req.Email, hash).Scan(&id)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			api.Error(w, http.StatusInternalServerError, "Error, no rows returned")
+			h.JSON.Error(w, http.StatusInternalServerError, "Error, no rows returned")
 			return
 		}
 		if pgErr, ok := err.(*pgconn.PgError); ok && pgErr.Code == "23505" {
-			api.ValidationError(w, "Email already exists")
+			h.JSON.ValidationError(w, "Email already exists")
 			return
 		}
-		api.Error(w, http.StatusInternalServerError, "Failed to create user")
+		h.JSON.Error(w, http.StatusInternalServerError, "Failed to create user")
 		return
 	}
 
-	api.Write(w, http.StatusCreated, api.V1UserSignUpResponse{Id: id})
+	h.JSON.Write(w, http.StatusCreated, api.V1UserSignUpResponse{Id: id})
 }
 func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	var req api.V1UserLoginRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		api.ValidationError(w, "Invalid Request")
+		h.JSON.ValidationError(w, "Invalid Request")
 		return
 	}
 
@@ -81,18 +81,18 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	err := h.DB.QueryRowContext(ctx, query, req.Email).Scan(&id, &hash)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			api.Error(w, http.StatusUnauthorized, "Invalid email or password")
+			h.JSON.Error(w, http.StatusUnauthorized, "Invalid email or password")
 			return
 		}
-		api.Error(w, http.StatusInternalServerError, "Failed to authenticate")
+		h.JSON.Error(w, http.StatusInternalServerError, "Failed to authenticate")
 		return
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(hash), []byte(req.Password))
 	if err != nil {
-		api.Error(w, http.StatusUnauthorized, "Invalid email or password")
+		h.JSON.Error(w, http.StatusUnauthorized, "Invalid email or password")
 		return
 	}
 
-	api.Write(w, http.StatusOK, api.V1UserLoginResponse{Id: id})
+	h.JSON.Write(w, http.StatusOK, api.V1UserLoginResponse{Id: id})
 }

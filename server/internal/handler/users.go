@@ -12,7 +12,7 @@ func (h *Handler) GetUsers(w http.ResponseWriter, r *http.Request) {
 	rows, err := h.DB.QueryContext(ctx, "SELECT id, email, created_at FROM auth.users")
 
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		h.JSON.Error(w, http.StatusInternalServerError, "Failed to query users")
 		return
 	}
 	defer rows.Close()
@@ -21,12 +21,12 @@ func (h *Handler) GetUsers(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var user api.V1UsersResponseUsers
 		if err := rows.Scan(&user.Id, &user.Email, &user.CreatedAt); err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			h.JSON.Error(w, http.StatusInternalServerError, "Failed to scan users")
 			return
 		}
 		users = append(users, user)
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	api.Success(w, api.V1UsersResponse{Users: users})
+	h.JSON.Success(w, api.V1UsersResponse{Users: users})
 }
