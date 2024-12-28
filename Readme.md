@@ -46,7 +46,7 @@ I am using Docker to Deploy this app
 # GOAL 
 
 Use this to... 
-Deploy system with terraform. Implement migrations and swagger spec.
+Deploy system with terraform. Implement migrations and swagger spec in the dashboard.
 Implement required microservices. Generate API. Implement backend handlers.
 Implement client.
 
