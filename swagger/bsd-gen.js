@@ -2,16 +2,17 @@ const fs = require('fs')
 const path = require('path')
 const chalk = require('chalk')
 const ora = require('ora')
+const yaml = require('js-yaml')
 const { log } = require('console')
 require('dotenv').config()
 
-const apiFilePath = './swagger/api.json' // Path to your OpenAPI JSON file
-const output1Dir = './web/src/api' // Output directory for generated files
-const output2Dir = './native/api' // Output directory for generated files
+const apiFilePath = './swagger/api.yaml'
+const output1Dir = './web/src/api'
+const output2Dir = './native/api'
 const outputDirGo = '../server/api'
-const outputBSDFile = 'ez.ts' // API client file name
-const outputTypesFile = 'types.ts' // Generated types file name
-const requestFilePath = './swagger/util/request.ts' // Path to the request.ts file
+const outputBSDFile = 'ez.ts'
+const outputTypesFile = 'types.ts'
+const requestFilePath = './swagger/util/request.ts'
 const origin = process.env.SWAG_ORIGIN
 if (!origin) {
   console.error(chalk.red('Error: Please set the ORIGIN environment variable'))
@@ -323,10 +324,22 @@ console.log(
 `)
 )
 
+const loadApiYaml = () => {
+  try {
+    const yamlContent = fs.readFileSync(apiFilePath, 'utf8')
+    const apiJson = yaml.load(yamlContent) // Parse YAML into a JavaScript object
+    console.log(chalk.green('Successfully loaded API YAML!'))
+    return apiJson
+  } catch (err) {
+    console.error(chalk.red('Failed to load API YAML:'), err.message)
+    process.exit(1)
+  }
+}
+
 // Main function to generate files
 const main = () => {
   const spinner = logStep('Parsing OpenAPI JSON')
-  const apiJson = JSON.parse(fs.readFileSync(apiFilePath, 'utf8'))
+  const apiJson = loadApiYaml()
   spinner.succeed(chalk.green('Successfully parsed OpenAPI JSON'))
 
   // Web & Native

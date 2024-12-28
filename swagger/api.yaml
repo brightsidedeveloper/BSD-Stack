@@ -1,0 +1,164 @@
+openapi: '3.0.3'
+info:
+  title: '8 API'
+  version: '0.0.1'
+paths:
+  /api/v1/auth/signup:
+    post:
+      summary: 'Create a new user'
+      operationId: 'signup'
+      requestBody:
+        description: 'User data to create'
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserSignUpRequest'
+      responses:
+        '200':
+          description: 'User created'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSignUpResponse'
+  /api/v1/auth/login:
+    post:
+      summary: 'Login a user'
+      operationId: 'login'
+      requestBody:
+        description: 'User data to login'
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLoginRequest'
+      responses:
+        '200':
+          description: 'User logged in'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserLoginResponse'
+  /api/v1/users:
+    get:
+      summary: 'Get a list of users'
+      operationId: 'users'
+      responses:
+        '200':
+          description: 'A list of users'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsersResponse'
+  /api/v1/health:
+    get:
+      summary: 'Check the health of the API'
+      operationId: 'health'
+      parameters:
+        - name: 'awesome'
+          in: 'query'
+          description: 'A flag to indicate if the response should be awesome'
+          required: false
+          schema:
+            type: 'boolean'
+            example: true
+      responses:
+        '200':
+          description: 'The API is healthy'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthStatusResponse'
+    post:
+      summary: 'Submit health data'
+      operationId: 'health'
+      requestBody:
+        description: 'Health data to submit'
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HealthStatusRequest'
+      responses:
+        '200':
+          description: 'Health status updated'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthStatusResponse'
+components:
+  schemas:
+    UserSignUpRequest:
+      type: 'object'
+      properties:
+        email:
+          type: 'string'
+          example: 'tim@brightsidedeveloper.com'
+        password:
+          type: 'string'
+          example: 'password'
+      required:
+        - 'email'
+        - 'password'
+    UserSignUpResponse:
+      type: 'object'
+      properties:
+        id:
+          type: 'string'
+          example: '1234-1234-1234-1234'
+    UsersResponse:
+      type: 'object'
+      properties:
+        users:
+          type: 'array'
+          items:
+            type: 'object'
+            properties:
+              id:
+                type: 'string'
+                example: '123'
+              email:
+                type: 'string'
+                example: 'tim@bsd.com'
+              createdAt:
+                type: 'string'
+                example: 30
+            required:
+              - 'id'
+              - 'email'
+              - 'createdAt'
+    UserLoginRequest:
+      type: 'object'
+      properties:
+        email:
+          type: 'string'
+          example: 'tim@brightsidedeveloper.com'
+        password:
+          type: 'string'
+          example: 'password'
+      required:
+        - 'email'
+        - 'password'
+    UserLoginResponse:
+      type: 'object'
+      properties:
+        id:
+          type: 'string'
+          example: '1234-1234-1234-1234'
+    HealthStatusRequest:
+      type: 'object'
+      properties:
+        health:
+          type: 'integer'
+          example: 85
+          description: 'The health status value to submit'
+      required:
+        - 'health'
+    HealthStatusResponse:
+      type: 'object'
+      properties:
+        status:
+          type: 'string'
+          example: 'healthy'
+      required:
+        - 'status'
