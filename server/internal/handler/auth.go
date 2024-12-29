@@ -47,13 +47,13 @@ func (h *Handler) SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	query := `INSERT INTO auth.users (email, password_hash) VALUES ($1, $2) RETURNING id`
+	query := `INSERT INTO auth.users (email, provider, password_hash) VALUES ($1, $2, $3) RETURNING id`
 	var id string
 
 	ctx, cancel := context.WithTimeout(r.Context(), 3*time.Second)
 	defer cancel()
 
-	err = h.DB.QueryRowContext(ctx, query, req.Email, hash).Scan(&id)
+	err = h.DB.QueryRowContext(ctx, query, req.Email, "local", hash).Scan(&id)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			h.JSON.Error(w, http.StatusInternalServerError, "Error, no rows returned")
@@ -69,6 +69,7 @@ func (h *Handler) SignUp(w http.ResponseWriter, r *http.Request) {
 
 	writeJWT(w, h, id)
 }
+
 func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	var req api.V1UserLoginRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {

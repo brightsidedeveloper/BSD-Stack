@@ -39,3 +39,11 @@ func GetUserID(ctx context.Context) (string, bool) {
 	userID, ok := ctx.Value(userKey).(string)
 	return userID, ok
 }
+
+type GoogleClaims struct {
+	Email    string `json:"email"`
+	Sub      string `json:"sub"`
+	Audience string `json:"aud"`
+	Issuer   string `json:"iss"`
+	Expiry   int64  `json:"exp"`
+}

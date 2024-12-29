@@ -7,12 +7,13 @@ const { log } = require('console')
 require('dotenv').config()
 
 const apiFilePath = './swagger/api.yaml'
-const output1Dir = './web/src/api'
-const output2Dir = './native/api'
-const outputDirGo = '../server/api'
+const webApiDir = './web/src/api'
+const nativeApiDir = './native/api'
+const desktopApiDir = './desktop/frontend/src/api'
+const goApiDir = '../server/api'
 const outputBSDFile = 'ez.ts'
 const outputTypesFile = 'types.ts'
-const webRequestFilePath = './swagger/util/request.web.ts'
+const webDesktopRequestFilePath = './swagger/util/request.web.ts'
 const nativeRequestFilePath = './swagger/util/request.native.ts'
 const origin = process.env.SWAG_ORIGIN
 if (!origin) {
@@ -351,7 +352,7 @@ const main = () => {
   const apiJson = loadApiYaml()
   spinner.succeed(chalk.green('Successfully parsed Swagger Spec'))
 
-  // Web & Native
+  // Web, Desktop & Native
   const spinner2 = logStep('Generating files')
   const generatedTypes = generateTypes(apiJson)
   const generatedApiClient = generateApiClient(apiJson)
@@ -361,38 +362,52 @@ const main = () => {
 
   // Web
   const spinner3 = logStep('Writing files to Web App')
-  fs.mkdirSync(output1Dir, { recursive: true })
-  fs.writeFileSync(path.join(output1Dir, outputTypesFile), generatedTypes, 'utf8')
-  fs.writeFileSync(path.join(output1Dir, outputBSDFile), generatedApiClient, 'utf8')
-  fs.writeFileSync(path.join(output1Dir, outputQueriesFile), generatedQueries, 'utf8')
-  const destination1RequestPath = path.join(output1Dir, 'request.ts')
-  fs.copyFileSync(webRequestFilePath, destination1RequestPath)
-  spinner3.succeed(chalk.green(`Copied files into ${output1Dir}`))
+  fs.mkdirSync(webApiDir, { recursive: true })
+  fs.writeFileSync(path.join(webApiDir, outputTypesFile), generatedTypes, 'utf8')
+  fs.writeFileSync(path.join(webApiDir, outputBSDFile), generatedApiClient, 'utf8')
+  fs.writeFileSync(path.join(webApiDir, outputQueriesFile), generatedQueries, 'utf8')
+  const webRequestFilePath = path.join(webApiDir, 'request.ts')
+  fs.copyFileSync(webDesktopRequestFilePath, webRequestFilePath)
+  spinner3.succeed(chalk.green(`Copied files into ${webApiDir}`))
+
+  // Desktop
+  const spinner6 = logStep('Writing files to Desktop App')
+  fs.mkdirSync(nativeApiDir, { recursive: true })
+  fs.writeFileSync(path.join(nativeApiDir, outputTypesFile), generatedTypes, 'utf8')
+  fs.writeFileSync(path.join(nativeApiDir, outputBSDFile), generatedApiClient, 'utf8')
+  fs.writeFileSync(path.join(nativeApiDir, outputQueriesFile), generatedQueries, 'utf8')
+
+  // Update request.ts for Desktop
+  const desktopRequestContent = fs.readFileSync(webRequestFilePath, 'utf8')
+  const updatedDesktopRequestContent = desktopRequestContent.replace("const BASE_URL = ''", `const BASE_URL = '${origin}'`)
+  const desktopRequestFilePath = path.join(nativeApiDir, 'request.ts')
+  fs.writeFileSync(desktopRequestFilePath, updatedDesktopRequestContent, 'utf8')
+  spinner6.succeed(chalk.green(`Copied & Configured files into ${desktopApiDir}`))
 
   // Native
   const spinner4 = logStep('Writing files to Native App')
-  fs.mkdirSync(output2Dir, { recursive: true })
-  fs.writeFileSync(path.join(output2Dir, outputTypesFile), generatedTypes, 'utf8')
-  fs.writeFileSync(path.join(output2Dir, outputBSDFile), generatedApiClient, 'utf8')
-  fs.writeFileSync(path.join(output2Dir, outputQueriesFile), generatedQueries, 'utf8')
-  spinner4.succeed(chalk.green(`Copied & Configured files into ${output2Dir}`))
+  fs.mkdirSync(nativeApiDir, { recursive: true })
+  fs.writeFileSync(path.join(nativeApiDir, outputTypesFile), generatedTypes, 'utf8')
+  fs.writeFileSync(path.join(nativeApiDir, outputBSDFile), generatedApiClient, 'utf8')
+  fs.writeFileSync(path.join(nativeApiDir, outputQueriesFile), generatedQueries, 'utf8')
 
   // Update request.ts for Native
-  const requestContent = fs.readFileSync(nativeRequestFilePath, 'utf8')
-  const updatedRequestContent = requestContent
+  const nativeRequestContent = fs.readFileSync(nativeRequestFilePath, 'utf8')
+  const updatedRequestContent = nativeRequestContent
     .replace("const BASE_URL = ''", `const BASE_URL = '${origin}'`)
     .replace("// @ts-expect-error - don't need module in this file", '')
-  const destination2RequestPath = path.join(output2Dir, 'request.ts')
-  fs.writeFileSync(destination2RequestPath, updatedRequestContent, 'utf8')
+  const newNativeRequestFilePath = path.join(nativeApiDir, 'request.ts')
+  fs.writeFileSync(newNativeRequestFilePath, updatedRequestContent, 'utf8')
+  spinner4.succeed(chalk.green(`Copied & Configured files into ${nativeApiDir}`))
 
   // Go
   const spinner5 = logStep('Generating Go structs')
   const generatedGoStructs = generateGoStructs(apiJson)
-  const goOutputDir = path.resolve(__dirname, outputDirGo)
+  const goOutputDir = path.resolve(__dirname, goApiDir)
   fs.mkdirSync(goOutputDir, { recursive: true })
   const goOutputFile = path.join(goOutputDir, 'types.go')
   fs.writeFileSync(goOutputFile, generatedGoStructs, 'utf8')
-  spinner5.succeed(chalk.green(`Generated Go structs in ${outputDirGo.replace('.', '') + '/types.go'}`))
+  spinner5.succeed(chalk.green(`Generated Go structs in ${goApiDir.replace('.', '') + '/types.go'}`))
 
   log(chalk.green('\nDone!\n'))
 }
