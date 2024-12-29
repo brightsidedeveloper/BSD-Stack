@@ -13,6 +13,9 @@ export default function App() {
 
   return (
     <div className="[&_p]:text-xl flex flex-col gap-4">
+      <button className="bg-slate-900 rounded-md p-2 text-white max-w-fit" onClick={() => refetch()}>
+        Refetch
+      </button>
       <p>React Version: {React.version}</p>
       <ul>{data?.users?.map((user) => <li key={user.id}>{user.email}</li>)}</ul>
       {error ? (
