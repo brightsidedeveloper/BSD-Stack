@@ -20,11 +20,6 @@ import (
 	"github.com/joho/godotenv"
 )
 
-type Test struct {
-	Name string `json:"name"`
-	Age  int    `json:"age"`
-}
-
 func main() {
 
 	loadEnv()
@@ -32,16 +27,18 @@ func main() {
 	db := connectDB()
 	defer db.Close()
 
+	j := &util.JSON{}
+
+	h := &handler.Handler{DB: db, JSON: j}
+
 	r := chi.NewRouter()
 
 	addCors(r)
 
-	json := &util.JSON{}
-
-	h := &handler.Handler{DB: db, JSON: json}
-
 	v1Router := chi.NewRouter()
+
 	addV1Routes(v1Router, h)
+
 	r.Mount("/api/v1", v1Router)
 
 	devMode := os.Getenv("DEV") == "true"
@@ -57,8 +54,16 @@ func main() {
 
 func loadEnv() {
 	if err := godotenv.Load(); err != nil {
-		log.Println(".env file not found, assuming production mode")
+		dev := os.Getenv("DEV")
+		if len(dev) == 0 {
+			log.Fatal("$DEV must be set")
+		}
+		log.Println(".env file loaded successfully")
 	} else {
+		dev := os.Getenv("DEV")
+		if len(dev) == 0 {
+			log.Fatal("$DEV must be set")
+		}
 		log.Println(".env file loaded successfully")
 	}
 }
