@@ -62,9 +62,22 @@ export default function App() {
           </button>
         </div>
       ) : d2?.status ? (
-        <button className="mx-auto w-fit" onClick={() => ez.post.v1Logout().then(() => refetch())}>
-          Logout
-        </button>
+        <div className="w-fit mx-auto flex flex-col items-center gap-4">
+          <button className="w-fit" onClick={() => ez.post.v1Logout().then(() => refetch())}>
+            Logout
+          </button>
+          <button
+            className="w-fit"
+            onClick={() =>
+              ez.post.v1DeleteAccount().then(() => {
+                refetch()
+                qc.invalidateQueries(createV1UsersQuery())
+              })
+            }
+          >
+            Delete Account
+          </button>
+        </div>
       ) : null}
     </div>
   )

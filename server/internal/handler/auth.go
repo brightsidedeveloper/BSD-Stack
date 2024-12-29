@@ -115,6 +115,27 @@ func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
 	h.JSON.Write(w, http.StatusOK, api.V1UserAuthResponse{Token: ""})
 }
 
+func (h *Handler) DeleteAccount(w http.ResponseWriter, r *http.Request) {
+	userID, ok := session.GetUserID(r.Context())
+	if !ok || userID == "" {
+		h.JSON.Error(w, http.StatusUnauthorized, "Unauthorized")
+		return
+	}
+
+	query := `DELETE FROM auth.users WHERE id = $1`
+
+	ctx, cancel := context.WithTimeout(r.Context(), 3*time.Second)
+	defer cancel()
+
+	_, err := h.DB.ExecContext(ctx, query, userID)
+	if err != nil {
+		h.JSON.Error(w, http.StatusInternalServerError, "Failed to delete user")
+		return
+	}
+
+	h.Logout(w, r)
+}
+
 func (h *Handler) AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		jwtSecret := os.Getenv("JWT_SECRET")

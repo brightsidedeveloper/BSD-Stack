@@ -59,6 +59,15 @@
       
   
         /**
+         * Delete a user
+         * @returns {Promise<V1UserAuthResponse>}
+         */
+        static async v1DeleteAccount() {
+          return post<V1UserAuthResponse>(`/api/v1/auth/delete`);
+        }
+      
+  
+        /**
          * Submit health data
          * @returns {Promise<V1HealthStatusResponse>}
          */
