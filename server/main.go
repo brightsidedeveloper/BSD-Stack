@@ -44,7 +44,7 @@ func main() {
 	devMode := os.Getenv("DEV") == "true"
 
 	if devMode {
-		proxyVite(r)
+		addViteProxy(r)
 	} else {
 		addClientRoutes(r)
 	}
@@ -107,7 +107,7 @@ func addV1Routes(r *chi.Mux, h *handler.Handler) {
 	})
 }
 
-func proxyVite(r *chi.Mux) {
+func addViteProxy(r *chi.Mux) {
 	viteServerURL := os.Getenv("VITE_SERVER_URL")
 	if viteServerURL == "" {
 		log.Fatal("$VITE_SERVER_URL must be set")
