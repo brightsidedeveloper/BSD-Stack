@@ -33,6 +33,18 @@ export default function HomeScreen() {
                 .catch((err) => Alert.alert('Login failed', err.message))
             }}
           />
+          {error && (
+            <Button
+              title="Sign Up"
+              onPress={() =>
+                ez.post
+                  .v1Signup({ email: 'tim@brightsidedeveloper.com', password: 'aaaaaaaa' })
+                  .then(() => refetch())
+                  .catch((err) => Alert.alert('Login create account', err.message))
+              }
+            />
+          )}
+          {!!data?.status && !error && <Button title="Delete Account" onPress={() => ez.post.v1DeleteAccount().then(() => refetch())} />}
         </ThemedText>
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
