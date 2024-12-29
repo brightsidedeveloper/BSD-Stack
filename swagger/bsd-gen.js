@@ -372,15 +372,15 @@ const main = () => {
 
   // Desktop
   const spinner6 = logStep('Writing files to Desktop App')
-  fs.mkdirSync(nativeApiDir, { recursive: true })
-  fs.writeFileSync(path.join(nativeApiDir, outputTypesFile), generatedTypes, 'utf8')
-  fs.writeFileSync(path.join(nativeApiDir, outputBSDFile), generatedApiClient, 'utf8')
-  fs.writeFileSync(path.join(nativeApiDir, outputQueriesFile), generatedQueries, 'utf8')
+  fs.mkdirSync(desktopApiDir, { recursive: true })
+  fs.writeFileSync(path.join(desktopApiDir, outputTypesFile), generatedTypes, 'utf8')
+  fs.writeFileSync(path.join(desktopApiDir, outputBSDFile), generatedApiClient, 'utf8')
+  fs.writeFileSync(path.join(desktopApiDir, outputQueriesFile), generatedQueries, 'utf8')
 
   // Update request.ts for Desktop
   const desktopRequestContent = fs.readFileSync(webRequestFilePath, 'utf8')
   const updatedDesktopRequestContent = desktopRequestContent.replace("const BASE_URL = ''", `const BASE_URL = '${origin}'`)
-  const desktopRequestFilePath = path.join(nativeApiDir, 'request.ts')
+  const desktopRequestFilePath = path.join(desktopApiDir, 'request.ts')
   fs.writeFileSync(desktopRequestFilePath, updatedDesktopRequestContent, 'utf8')
   spinner6.succeed(chalk.green(`Copied & Configured files into ${desktopApiDir}`))
 
