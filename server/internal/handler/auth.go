@@ -104,15 +104,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
-	devMode := os.Getenv("DEV") == "true"
-	http.SetCookie(w, &http.Cookie{
-		Name:     session.AccessTokenName,
-		Value:    "",
-		HttpOnly: true,
-		Secure:   !devMode,
-		Path:     "/",
-		MaxAge:   -1,
-	})
+	setAuthCookie(w, "")
 	h.JSON.Write(w, http.StatusOK, api.V1UserAuthResponse{Token: ""})
 }
 
@@ -199,20 +191,31 @@ func writeJWT(w http.ResponseWriter, h *Handler, userID string) {
 		return
 	}
 
+	// Web & Desktop
+	setAuthCookie(w, token)
+
+	// Native
+	h.JSON.Write(w, http.StatusOK, api.V1UserAuthResponse{
+		Token: token,
+	})
+}
+
+func setAuthCookie(w http.ResponseWriter, token string) {
 	devMode := os.Getenv("DEV") == "true"
 
-	// Web
+	var maxAge int
+	if len(token) == 0 {
+		maxAge = -1
+	} else {
+		maxAge = 86400
+	}
+
 	http.SetCookie(w, &http.Cookie{
 		Name:     session.AccessTokenName,
 		Value:    token,
 		HttpOnly: true,
 		Secure:   !devMode,
 		Path:     "/",
-		MaxAge:   86400,
-	})
-
-	// Native
-	h.JSON.Write(w, http.StatusOK, api.V1UserAuthResponse{
-		Token: token,
+		MaxAge:   maxAge,
 	})
 }

@@ -13,8 +13,9 @@ const desktopApiDir = './desktop/frontend/src/api'
 const goApiDir = '../server/api'
 const outputBSDFile = 'ez.ts'
 const outputTypesFile = 'types.ts'
-const webDesktopRequestFilePath = './swagger/util/request.web.ts'
-const nativeRequestFilePath = './swagger/util/request.native.ts'
+const desktopRequestTemplateFilePath = './swagger/util/request.desktop.ts'
+const webRequestTemplateFilePath = './swagger/util/request.web.ts'
+const nativeRequestTemplateFilePath = './swagger/util/request.native.ts'
 const origin = process.env.SWAG_ORIGIN
 if (!origin) {
   console.error(chalk.red('Error: Please set the ORIGIN environment variable'))
@@ -367,7 +368,7 @@ const main = () => {
   fs.writeFileSync(path.join(webApiDir, outputBSDFile), generatedApiClient, 'utf8')
   fs.writeFileSync(path.join(webApiDir, outputQueriesFile), generatedQueries, 'utf8')
   const webRequestFilePath = path.join(webApiDir, 'request.ts')
-  fs.copyFileSync(webDesktopRequestFilePath, webRequestFilePath)
+  fs.copyFileSync(webRequestTemplateFilePath, webRequestFilePath)
   spinner3.succeed(chalk.green(`Copied files into ${webApiDir}`))
 
   // Desktop
@@ -378,7 +379,7 @@ const main = () => {
   fs.writeFileSync(path.join(desktopApiDir, outputQueriesFile), generatedQueries, 'utf8')
 
   // Update request.ts for Desktop
-  const desktopRequestContent = fs.readFileSync(webRequestFilePath, 'utf8')
+  const desktopRequestContent = fs.readFileSync(desktopRequestTemplateFilePath, 'utf8')
   const updatedDesktopRequestContent = desktopRequestContent.replace("const BASE_URL = ''", `const BASE_URL = '${origin}'`)
   const desktopRequestFilePath = path.join(desktopApiDir, 'request.ts')
   fs.writeFileSync(desktopRequestFilePath, updatedDesktopRequestContent, 'utf8')
@@ -392,7 +393,7 @@ const main = () => {
   fs.writeFileSync(path.join(nativeApiDir, outputQueriesFile), generatedQueries, 'utf8')
 
   // Update request.ts for Native
-  const nativeRequestContent = fs.readFileSync(nativeRequestFilePath, 'utf8')
+  const nativeRequestContent = fs.readFileSync(nativeRequestTemplateFilePath, 'utf8')
   const updatedRequestContent = nativeRequestContent
     .replace("const BASE_URL = ''", `const BASE_URL = '${origin}'`)
     .replace("// @ts-expect-error - don't need module in this file", '')

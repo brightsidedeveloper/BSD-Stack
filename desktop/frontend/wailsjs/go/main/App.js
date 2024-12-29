@@ -6,6 +6,6 @@ export function Greet(arg1) {
   return window['go']['main']['App']['Greet'](arg1);
 }
 
-export function ShowAlert() {
-  return window['go']['main']['App']['ShowAlert']();
+export function ShowAlert(arg1) {
+  return window['go']['main']['App']['ShowAlert'](arg1);
 }

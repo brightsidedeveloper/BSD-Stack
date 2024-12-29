@@ -1,7 +1,8 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { createV1HealthQuery, createV1UsersQuery } from './api/queries'
 import ez from './api/ez'
+import { ShowAlert } from '../wailsjs/go/main/App'
 
 export default function App() {
   const qc = useQueryClient()
@@ -10,6 +11,10 @@ export default function App() {
 
   const [email, setEmail] = React.useState('')
   const [password, setPassword] = React.useState('')
+
+  useEffect(() => {
+    localStorage.token = 'test'
+  }, [])
 
   return (
     <div className="[&_p]:text-xl flex flex-col gap-4">
@@ -32,8 +37,7 @@ export default function App() {
                   refetch()
                 })
                 .catch((e) => {
-                  console.log(e)
-                  alert(e.message)
+                  ShowAlert(e.message)
                 })
             }
           >
@@ -48,8 +52,7 @@ export default function App() {
                 })
                 .then(() => refetch())
                 .catch((e) => {
-                  console.log(e)
-                  alert(e.message)
+                  ShowAlert(e.message)
                 })
             }
           >

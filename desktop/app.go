@@ -28,10 +28,10 @@ func (a *App) Greet(name string) string {
 	return fmt.Sprintf("Hello %s, It's show time!", name)
 }
 
-func (a *App) ShowAlert() {
+func (a *App) ShowAlert(msg string) {
 	runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{
 		Type:    runtime.InfoDialog,
-		Title:   "Hello",
-		Message: "It's show time!",
+		Title:   "Hey!",
+		Message: msg,
 	})
 }

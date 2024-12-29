@@ -3,4 +3,4 @@
 
 export function Greet(arg1:string):Promise<string>;
 
-export function ShowAlert():Promise<void>;
+export function ShowAlert(arg1:string):Promise<void>;
