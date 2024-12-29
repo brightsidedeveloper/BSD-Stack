@@ -329,7 +329,6 @@ const loadApiYaml = () => {
   try {
     const yamlContent = fs.readFileSync(apiFilePath, 'utf8')
     const apiJson = yaml.load(yamlContent) // Parse YAML into a JavaScript object
-    console.log(chalk.green('Successfully loaded API YAML!'))
     return apiJson
   } catch (err) {
     console.error(chalk.red('Failed to load API YAML:'), err.message)
@@ -339,9 +338,9 @@ const loadApiYaml = () => {
 
 // Main function to generate files
 const main = () => {
-  const spinner = logStep('Parsing OpenAPI JSON')
+  const spinner = logStep('Parsing Swagger Spec')
   const apiJson = loadApiYaml()
-  spinner.succeed(chalk.green('Successfully parsed OpenAPI JSON'))
+  spinner.succeed(chalk.green('Successfully parsed Swagger Spec'))
 
   // Web & Native
   const spinner2 = logStep('Generating files')
