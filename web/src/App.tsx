@@ -2,7 +2,6 @@ import React from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { createV1HealthQuery, createV1UsersQuery } from './api/queries'
 import ez from './api/ez'
-import { Test } from 'ui-webapp'
 
 export default function App() {
   const qc = useQueryClient()
@@ -14,7 +13,6 @@ export default function App() {
 
   return (
     <div className="[&_p]:text-xl flex flex-col gap-4">
-      <Test />
       <p>React Version: {React.version}</p>
       <ul>{data?.users?.map((user) => <li key={user.id}>{user.email}</li>)}</ul>
       {error ? (
