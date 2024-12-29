@@ -12,6 +12,7 @@
   "dependencies": {
     "@tanstack/react-query": "^5.62.10",
     "@tanstack/react-router": "^1.92.11",
+    "ui-webapp": "file:../../packages/ui-webapp",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
