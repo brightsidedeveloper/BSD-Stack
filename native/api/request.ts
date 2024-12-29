@@ -8,7 +8,7 @@ export interface FetchOptions extends RequestInit {
   queryParams?: Record<string, unknown>
 }
 
-const BASE_URL = 'http://dev8.brightsideserve.com'
+const BASE_URL = 'http://192.168.86.244:8888'
 
 const buildQueryString = (params: Record<string, unknown> = {}): string => {
   const query = Object.entries(params)
@@ -87,7 +87,7 @@ export const post = async <T = unknown>(endpoint: string, body: unknown = {}, op
 
   const res = await response.json()
 
-  if (res.token) {
+  if ('token' in res && typeof res.token === 'string') {
     await SecureStore.setItemAsync('token', res.token)
   }
 

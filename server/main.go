@@ -96,8 +96,9 @@ func addCors(r *chi.Mux) {
 }
 
 func addV1Routes(r *chi.Mux, h *handler.Handler) {
-	r.Post("/auth/login", h.Login)
 	r.Post("/auth/signup", h.SignUp)
+	r.Post("/auth/login", h.Login)
+	r.Post("/auth/logout", h.Logout)
 	r.Post("/health", h.PostHealthStatus)
 	r.Get("/users", h.GetUsers)
 

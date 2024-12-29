@@ -3,26 +3,38 @@
  * Auto-generated File - BSD
  */
 
-import { queryOptions } from '@tanstack/react-query';
+import { UseQueryOptions, queryOptions } from '@tanstack/react-query';
 import ez from './ez';
-import { v1HealthParams, v1UserSignUpRequest, v1UsersResponse, v1UserLoginRequest, v1UserAuthResponse, v1HealthStatusRequest, v1HealthStatusResponse } from './types';
+import { V1HealthParams } from './types';
 
 
-export function createV1UsersQuery() {
+export function createV1UsersQuery<TData = Awaited<ReturnType<typeof ez.get.v1Users>>, TError = Error>(opts: Omit<UseQueryOptions<Awaited<ReturnType<typeof ez.get.v1Users>>, TError, TData, V1UsersQueryKey>, 'queryKey' | 'queryFn'> = {}) {
   return queryOptions({
-    queryKey: ['users'],
+    ...opts,
+    queryKey: getV1UsersQueryKey(),
     queryFn() {
       return ez.get.v1Users();
     },
   });
 }
+export function getV1UsersQueryKey() {
+  return ['users'] as const;
+}
+export type V1UsersQueryKey = ReturnType<typeof getV1UsersQueryKey>;
 
 
-export function createV1HealthQuery(params: v1HealthParams) {
+
+export function createV1HealthQuery<TData = Awaited<ReturnType<typeof ez.get.v1Health>>, TError = Error>(params: V1HealthParams, opts: Omit<UseQueryOptions<Awaited<ReturnType<typeof ez.get.v1Health>>, TError, TData, V1HealthQueryKey>, 'queryKey' | 'queryFn'> = {}) {
   return queryOptions({
-    queryKey: ['health', params],
+    ...opts,
+    queryKey: getV1HealthQueryKey(params),
     queryFn() {
       return ez.get.v1Health(params);
     },
   });
 }
+export function getV1HealthQueryKey(params: V1HealthParams) {
+  return ['health', params] as const;
+}
+export type V1HealthQueryKey = ReturnType<typeof getV1HealthQueryKey>;
+

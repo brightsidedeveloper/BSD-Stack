@@ -102,6 +102,19 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	writeJWT(w, h, id)
 }
 
+func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
+	devMode := os.Getenv("DEV") == "true"
+	http.SetCookie(w, &http.Cookie{
+		Name:     session.AccessTokenName,
+		Value:    "",
+		HttpOnly: true,
+		Secure:   !devMode,
+		Path:     "/",
+		MaxAge:   -1,
+	})
+	h.JSON.Write(w, http.StatusOK, api.V1UserAuthResponse{Token: ""})
+}
+
 func (h *Handler) AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		jwtSecret := os.Getenv("JWT_SECRET")

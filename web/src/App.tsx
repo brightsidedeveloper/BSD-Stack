@@ -6,7 +6,7 @@ import ez from './api/ez'
 export default function App() {
   const qc = useQueryClient()
   const { data } = useQuery(createV1UsersQuery())
-  const { data: d2 } = useQuery(createV1HealthQuery({ awesome: true }))
+  const { data: d2, error, refetch } = useQuery(createV1HealthQuery({}))
 
   const [email, setEmail] = React.useState('')
   const [password, setPassword] = React.useState('')
@@ -14,52 +14,58 @@ export default function App() {
   return (
     <div className="[&_p]:text-xl flex flex-col gap-4">
       <p>React Version: {React.version}</p>
-      <p>{d2?.status}</p>
+
       <ul>
         {data?.users?.map((user) => (
           <li key={user.id}>{user.email}</li>
         ))}
       </ul>
-      <input type="text" value={email} onChange={(e) => setEmail(e.target.value)} />
-      <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-      <button
-        onClick={() =>
-          ez.post
-            .v1Signup({
-              email,
-              password,
-            })
-            .then(({ token }) => {
-              alert(`User created with session: ${token}`)
-              qc.invalidateQueries(createV1UsersQuery())
-            })
-            .catch((e) => {
-              console.log(e)
-              alert(e.message)
-            })
-        }
-      >
-        Create Account
-      </button>
-      <button
-        onClick={() =>
-          ez.post
-            .v1Login({
-              email,
-              password,
-            })
-            .then(({ token }) => {
-              alert(`User logged in with session: ${token}`)
-              qc.invalidateQueries(createV1UsersQuery())
-            })
-            .catch((e) => {
-              console.log(e)
-              alert(e.message)
-            })
-        }
-      >
-        Login Account
-      </button>
+      {error ? (
+        <div className="mx-auto flex flex-col gap-4 [&_input]:border [&_input]:p-2 [&_input]:rounded-xl max-w-64 p-4 px-6 border rounded-xl ">
+          <h3 className="text-xl py-2 text-center">GO Fire no cap</h3>
+          <input type="text" placeholder="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+          <input type="password" placeholder="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+          <button
+            onClick={() =>
+              ez.post
+                .v1Signup({
+                  email,
+                  password,
+                })
+                .then(() => {
+                  qc.invalidateQueries(createV1UsersQuery())
+                  refetch()
+                })
+                .catch((e) => {
+                  console.log(e)
+                  alert(e.message)
+                })
+            }
+          >
+            Create Account
+          </button>
+          <button
+            onClick={() =>
+              ez.post
+                .v1Login({
+                  email,
+                  password,
+                })
+                .then(() => refetch())
+                .catch((e) => {
+                  console.log(e)
+                  alert(e.message)
+                })
+            }
+          >
+            Login Account
+          </button>
+        </div>
+      ) : d2?.status ? (
+        <button className="mx-auto w-fit" onClick={() => ez.post.v1Logout().then(() => refetch())}>
+          Logout
+        </button>
+      ) : null}
     </div>
   )
 }

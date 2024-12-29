@@ -58,11 +58,12 @@ const generateTypes = (apiJson) => {
   // Extract version from the first path (assuming consistent versioning in all paths)
   const versionMatch = Object.keys(apiJson.paths)[0].match(/\/(v\d+)/)
   const version = versionMatch ? versionMatch[1] : 'UnknownVersion'
+  const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1)
 
   // Generate schema types with version prepended
   const schemaTypes = Object.entries(components)
     .map(([name, schema]) => {
-      const typeName = `${version}${toPascalCase(name)}`
+      const typeName = `${capitalize(version)}${toPascalCase(name)}`
       const properties = Object.entries(schema.properties || {})
         .map(([propName, propSchema]) => {
           let tsType
@@ -85,7 +86,7 @@ const generateTypes = (apiJson) => {
       Object.entries(methods).flatMap(([method, details]) => {
         if (!details.parameters) return []
         const operationId = details.operationId ? capitalize(details.operationId) : 'UnnamedOperation'
-        const typeName = `${version}${operationId}Params`
+        const typeName = `${capitalize(version)}${operationId}Params`
 
         const properties = details.parameters
           .map((param) => {
@@ -116,33 +117,36 @@ const generateApiClient = (apiJson) => {
   // Extract version from the first path (assuming consistent versioning in all paths)
   const versionMatch = Object.keys(apiJson.paths)[0].match(/\/(v\d+)/)
   const version = versionMatch ? versionMatch[1] : 'UnknownVersion'
+  const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1)
 
   const parameterTypes = Object.entries(apiJson.paths)
     .flatMap(([path, methods]) =>
       Object.entries(methods).flatMap(([method, details]) => {
         if (!details.parameters) return []
         const operationId = details.operationId ? capitalize(details.operationId) : 'UnnamedOperation'
-        return `${version}${operationId}Params`
+        return `${capitalize(version)}${operationId}Params`
       })
     )
     .filter((typeName, index, self) => self.indexOf(typeName) === index) // Remove duplicates
 
+  let usedMethods = new Set([])
   Object.entries(apiJson.paths).forEach(([path, methods]) => {
     Object.entries(methods).forEach(([method, details]) => {
+      usedMethods = new Set([...usedMethods, method])
       const className = capitalize(method)
       const operationId = details.operationId ? capitalize(details.operationId) : 'UnnamedOperation'
       const functionName = `${version}${operationId}`
       const responseSchema = details.responses?.['200']?.content?.['application/json']?.schema
       const responseType = responseSchema
         ? responseSchema.$ref
-          ? `${version}${toPascalCase(responseSchema.$ref.split('/').pop())}`
+          ? `${capitalize(version)}${toPascalCase(responseSchema.$ref.split('/').pop())}`
           : mapOpenApiTypeToTsType(responseSchema.type, responseSchema.items)
         : 'void'
 
       const paramSchema = details.parameters?.length
-        ? `${version}${operationId}Params`
+        ? `${capitalize(version)}${operationId}Params`
         : details.requestBody?.content?.['application/json']?.schema?.$ref
-        ? `${version}${toPascalCase(details.requestBody.content['application/json'].schema.$ref.split('/').pop())}`
+        ? `${capitalize(version)}${toPascalCase(details.requestBody.content['application/json'].schema.$ref.split('/').pop())}`
         : null
 
       const paramsType = paramSchema ? `params: ${paramSchema}` : ''
@@ -179,10 +183,11 @@ const generateApiClient = (apiJson) => {
    * Auto-generated File - BSD
    */
 
-  import { get, post, put, patch, del } from './request';
-  import { ${[...Object.keys(apiJson.components.schemas).map((name) => `${version}${toPascalCase(name)}`), ...parameterTypes].join(
-    ', '
-  )} } from './types';
+  import { ${Array.from(usedMethods).join(', ')} } from './request';
+  import { ${[
+    ...Object.keys(apiJson.components.schemas).map((name) => `${capitalize(version)}${toPascalCase(name)}`),
+    ...parameterTypes,
+  ].join(', ')} } from './types';
 
   ${classCode}
 
@@ -207,19 +212,24 @@ const generateQueries = (apiJson) => {
         if (method.toLowerCase() !== 'get') return []
         const operationId = details.operationId ? capitalize(details.operationId) : 'UnnamedOperation'
         const functionName = `create${version.toUpperCase()}${operationId}Query`
-        const paramsType = details.parameters?.length ? `${version}${operationId}Params` : null
+        const paramsType = details.parameters?.length ? `${version.toUpperCase()}${operationId}Params` : null
 
-        const paramsArg = paramsType ? `params: ${paramsType}` : ''
-
+        const paramsArg = paramsType ? `params: ${paramsType}, ` : ''
         return `
-export function ${functionName}(${paramsArg}) {
+export function ${functionName}<TData = Awaited<ReturnType<typeof ez.get.${version}${operationId}>>, TError = Error>(${paramsArg}opts: Omit<UseQueryOptions<Awaited<ReturnType<typeof ez.get.${version}${operationId}>>, TError, TData, ${version.toUpperCase()}${operationId}QueryKey>, 'queryKey' | 'queryFn'> = {}) {
   return queryOptions({
-    queryKey: ['${operationId.toLowerCase()}'${paramsType ? ', params' : ''}],
+    ...opts,
+    queryKey: get${version.toUpperCase()}${operationId}QueryKey(${paramsType ? 'params' : ''}),
     queryFn() {
       return ez.get.${version}${operationId}(${paramsType ? 'params' : ''});
     },
   });
-}`
+}
+export function get${version.toUpperCase()}${operationId}QueryKey(${paramsType ? 'params: ' + paramsType : ''}) {
+  return ['${operationId.toLowerCase()}'${paramsType ? ', params' : ''}] as const;
+}
+export type ${version.toUpperCase()}${operationId}QueryKey = ReturnType<typeof get${version.toUpperCase()}${operationId}QueryKey>;
+`
       })
     )
     .join('\n\n')
@@ -229,20 +239,19 @@ export function ${functionName}(${paramsArg}) {
  * Auto-generated File - BSD
  */
 
-import { queryOptions } from '@tanstack/react-query';
+import { UseQueryOptions, queryOptions } from '@tanstack/react-query';
 import ez from './ez';
 import { ${[
     ...Object.entries(apiJson.paths)
       .flatMap(([_, methods]) =>
         Object.entries(methods).flatMap(([method, details]) =>
           method.toLowerCase() === 'get' && details.parameters
-            ? `${version}${capitalize(details.operationId || 'UnnamedOperation')}Params`
+            ? `${capitalize(version)}${capitalize(details.operationId || 'UnnamedOperation')}Params`
             : []
         )
       )
-      .filter((typeName, index, self) => self.indexOf(typeName) === index), // Remove duplicates
-    ...Object.keys(apiJson.components.schemas).map((name) => `${version}${toPascalCase(name)}`),
-  ].join(', ')} } from './types';
+      .filter((typeName, index, self) => self.indexOf(typeName) === index),
+  ]} } from './types';
 
 ${queries}
 `

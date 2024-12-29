@@ -3,15 +3,13 @@ import { HelloWave } from '@/components/HelloWave'
 import ParallaxScrollView from '@/components/ParallaxScrollView'
 import { ThemedText } from '@/components/ThemedText'
 import { ThemedView } from '@/components/ThemedView'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { createV1HealthQuery } from '@/api/queries'
 import ez from '@/api/ez'
 
 export default function HomeScreen() {
-  const qc = useQueryClient()
-  const { data, error } = useQuery(createV1HealthQuery({ awesome: true }))
+  const { data, error, refetch } = useQuery(createV1HealthQuery({}))
 
-  console.log(data, error)
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
@@ -22,19 +20,17 @@ export default function HomeScreen() {
         <HelloWave />
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: {data?.status}</ThemedText>
+        <ThemedText type="subtitle">Step 1: {error ? 'LoggedOut' : data?.status}</ThemedText>
         <ThemedText>
           <Button
-            title="Login"
+            title={error ? 'Login' : data?.status ? 'Logout' : 'Loading...'}
+            disabled={!error && !data?.status}
             onPress={() => {
+              if (data?.status && !error) return ez.post.v1Logout().then(() => refetch())
               ez.post
                 .v1Login({ email: 'tim@brightsidedeveloper.com', password: 'aaaaaaaa' })
-                .then(async ({ token }) => {
-                  qc.invalidateQueries(createV1HealthQuery({ awesome: true }))
-                })
-                .catch((err) => {
-                  Alert.alert('Login failed2', err.message)
-                })
+                .then(() => refetch())
+                .catch((err) => Alert.alert('Login failed', err.message))
             }}
           />
         </ThemedText>

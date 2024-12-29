@@ -3,27 +3,27 @@
    * Auto-generated File - BSD
    */
 
-  import { get, post, put, patch, del } from './request';
-  import { v1UserSignUpRequest, v1UsersResponse, v1UserLoginRequest, v1UserAuthResponse, v1HealthStatusRequest, v1HealthStatusResponse, v1HealthParams } from './types';
+  import { post, get } from './request';
+  import { V1UserSignUpRequest, V1UsersResponse, V1UserLoginRequest, V1UserAuthResponse, V1HealthStatusRequest, V1HealthStatusResponse, V1HealthParams } from './types';
 
   
   class Get {
     
         /**
          * Get a list of users
-         * @returns {Promise<v1UsersResponse>}
+         * @returns {Promise<V1UsersResponse>}
          */
         static async v1Users() {
-          return get<v1UsersResponse>(`/api/v1/users`);
+          return get<V1UsersResponse>(`/api/v1/users`);
         }
       
   
         /**
          * Check the health of the API
-         * @returns {Promise<v1HealthStatusResponse>}
+         * @returns {Promise<V1HealthStatusResponse>}
          */
-        static async v1Health(params: v1HealthParams) {
-          return get<v1HealthStatusResponse>(`/api/v1/health`, params);
+        static async v1Health(params: V1HealthParams) {
+          return get<V1HealthStatusResponse>(`/api/v1/health`, params);
         }
       
   }
@@ -33,28 +33,37 @@
     
         /**
          * Create a new user
-         * @returns {Promise<v1UserAuthResponse>}
+         * @returns {Promise<V1UserAuthResponse>}
          */
-        static async v1Signup(params: v1UserSignUpRequest) {
-          return post<v1UserAuthResponse>(`/api/v1/auth/signup`, params);
+        static async v1Signup(params: V1UserSignUpRequest) {
+          return post<V1UserAuthResponse>(`/api/v1/auth/signup`, params);
         }
       
   
         /**
          * Login a user
-         * @returns {Promise<v1UserAuthResponse>}
+         * @returns {Promise<V1UserAuthResponse>}
          */
-        static async v1Login(params: v1UserLoginRequest) {
-          return post<v1UserAuthResponse>(`/api/v1/auth/login`, params);
+        static async v1Login(params: V1UserLoginRequest) {
+          return post<V1UserAuthResponse>(`/api/v1/auth/login`, params);
+        }
+      
+  
+        /**
+         * Logout a user
+         * @returns {Promise<V1UserAuthResponse>}
+         */
+        static async v1Logout() {
+          return post<V1UserAuthResponse>(`/api/v1/auth/logout`);
         }
       
   
         /**
          * Submit health data
-         * @returns {Promise<v1HealthStatusResponse>}
+         * @returns {Promise<V1HealthStatusResponse>}
          */
-        static async v1Health(params: v1HealthStatusRequest) {
-          return post<v1HealthStatusResponse>(`/api/v1/health`, params);
+        static async v1Health(params: V1HealthStatusRequest) {
+          return post<V1HealthStatusResponse>(`/api/v1/health`, params);
         }
       
   }

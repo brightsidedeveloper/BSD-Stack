@@ -87,7 +87,7 @@ export const post = async <T = unknown>(endpoint: string, body: unknown = {}, op
 
   const res = await response.json()
 
-  if (res.token) {
+  if ('token' in res && typeof res.token === 'string') {
     await SecureStore.setItemAsync('token', res.token)
   }
 
