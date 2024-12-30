@@ -3,18 +3,18 @@
    * Auto-generated File - BSD
    */
   
-  export type V1UserSignUpRequest = {
+  export type UserSignUpRequest = {
   email: string;
   password: string;
 }
 
-export type V1MeResponse = {
+export type MeResponse = {
   id: string;
   email: string;
   createdAt: string;
 }
 
-export type V1UsersResponse = {
+export type UsersResponse = {
   users?: Array<{
   id: string;
   email: string;
@@ -22,24 +22,24 @@ export type V1UsersResponse = {
 }>;
 }
 
-export type V1UserLoginRequest = {
+export type UserLoginRequest = {
   email: string;
   password: string;
 }
 
-export type V1UserAuthResponse = {
+export type UserAuthResponse = {
   token?: string;
 }
 
-export type V1HealthStatusRequest = {
+export type HealthStatusRequest = {
   health: number;
 }
 
-export type V1HealthStatusResponse = {
+export type HealthStatusResponse = {
   status: string;
 }
 
-  export type V1HealthParams = {
+  export type HealthParams = {
   awesome?: boolean;
 }
   

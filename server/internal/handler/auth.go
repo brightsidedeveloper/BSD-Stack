@@ -25,7 +25,7 @@ func isValidEmail(email string) bool {
 }
 
 func (h *Handler) SignUp(w http.ResponseWriter, r *http.Request) {
-	var req api.V1UserSignUpRequest
+	var req api.UserSignUpRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		h.JSON.ValidationError(w, "Invalid Request")
 		return
@@ -71,7 +71,7 @@ func (h *Handler) SignUp(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
-	var req api.V1UserLoginRequest
+	var req api.UserLoginRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		h.JSON.ValidationError(w, "Invalid Request")
 		return
@@ -104,7 +104,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
 	setAuthCookie(w, "")
-	h.JSON.Write(w, http.StatusOK, api.V1UserAuthResponse{Token: ""})
+	h.JSON.Write(w, http.StatusOK, api.UserAuthResponse{Token: ""})
 }
 
 func (h *Handler) DeleteAccount(w http.ResponseWriter, r *http.Request) {
@@ -194,7 +194,7 @@ func writeJWT(w http.ResponseWriter, h *Handler, userID string) {
 	setAuthCookie(w, token)
 
 	// Native
-	h.JSON.Write(w, http.StatusOK, api.V1UserAuthResponse{
+	h.JSON.Write(w, http.StatusOK, api.UserAuthResponse{
 		Token: token,
 	})
 }

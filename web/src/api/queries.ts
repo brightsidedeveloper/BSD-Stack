@@ -5,52 +5,52 @@
 
 import { UseQueryOptions, queryOptions } from '@tanstack/react-query';
 import ez from './ez';
-import { V1HealthParams } from './types';
+import { HealthParams } from './types';
 
 
-export function createV1MeQuery<TData = Awaited<ReturnType<typeof ez.get.v1Me>>, TError = Error>(opts: Omit<UseQueryOptions<Awaited<ReturnType<typeof ez.get.v1Me>>, TError, TData, V1MeQueryKey>, 'queryKey' | 'queryFn'> = {}) {
+export function createMeQuery<TData = Awaited<ReturnType<typeof ez.get.me>>, TError = Error>(opts: Omit<UseQueryOptions<Awaited<ReturnType<typeof ez.get.me>>, TError, TData, MeQueryKey>, 'queryKey' | 'queryFn'> = {}) {
   return queryOptions({
     ...opts,
-    queryKey: getV1MeQueryKey(),
+    queryKey: getMeQueryKey(),
     queryFn() {
-      return ez.get.v1Me();
+      return ez.get.me();
     },
   });
 }
-export function getV1MeQueryKey() {
+export function getMeQueryKey() {
   return ['me'] as const;
 }
-export type V1MeQueryKey = ReturnType<typeof getV1MeQueryKey>;
+export type MeQueryKey = ReturnType<typeof getMeQueryKey>;
 
 
 
-export function createV1UsersQuery<TData = Awaited<ReturnType<typeof ez.get.v1Users>>, TError = Error>(opts: Omit<UseQueryOptions<Awaited<ReturnType<typeof ez.get.v1Users>>, TError, TData, V1UsersQueryKey>, 'queryKey' | 'queryFn'> = {}) {
+export function createUsersQuery<TData = Awaited<ReturnType<typeof ez.get.users>>, TError = Error>(opts: Omit<UseQueryOptions<Awaited<ReturnType<typeof ez.get.users>>, TError, TData, UsersQueryKey>, 'queryKey' | 'queryFn'> = {}) {
   return queryOptions({
     ...opts,
-    queryKey: getV1UsersQueryKey(),
+    queryKey: getUsersQueryKey(),
     queryFn() {
-      return ez.get.v1Users();
+      return ez.get.users();
     },
   });
 }
-export function getV1UsersQueryKey() {
+export function getUsersQueryKey() {
   return ['users'] as const;
 }
-export type V1UsersQueryKey = ReturnType<typeof getV1UsersQueryKey>;
+export type UsersQueryKey = ReturnType<typeof getUsersQueryKey>;
 
 
 
-export function createV1HealthQuery<TData = Awaited<ReturnType<typeof ez.get.v1Health>>, TError = Error>(params: V1HealthParams, opts: Omit<UseQueryOptions<Awaited<ReturnType<typeof ez.get.v1Health>>, TError, TData, V1HealthQueryKey>, 'queryKey' | 'queryFn'> = {}) {
+export function createHealthQuery<TData = Awaited<ReturnType<typeof ez.get.health>>, TError = Error>(params: HealthParams, opts: Omit<UseQueryOptions<Awaited<ReturnType<typeof ez.get.health>>, TError, TData, HealthQueryKey>, 'queryKey' | 'queryFn'> = {}) {
   return queryOptions({
     ...opts,
-    queryKey: getV1HealthQueryKey(params),
+    queryKey: getHealthQueryKey(params),
     queryFn() {
-      return ez.get.v1Health(params);
+      return ez.get.health(params);
     },
   });
 }
-export function getV1HealthQueryKey(params: V1HealthParams) {
+export function getHealthQueryKey(params: HealthParams) {
   return ['health', params] as const;
 }
-export type V1HealthQueryKey = ReturnType<typeof getV1HealthQueryKey>;
+export type HealthQueryKey = ReturnType<typeof getHealthQueryKey>;
 

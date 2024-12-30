@@ -2,40 +2,40 @@
 
 package api
 
-type V1UsersResponseUsers struct {
-	Id        string `json:"id"`
-	Email     string `json:"email"`
-	CreatedAt string `json:"createdAt"`
+type UsersResponseUsers struct {
+  Id string `json:"id"`
+  Email string `json:"email"`
+  CreatedAt string `json:"createdAt"`
 }
 
-type V1UserSignUpRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+type UserSignUpRequest struct {
+  Email string `json:"email"`
+  Password string `json:"password"`
 }
 
-type V1MeResponse struct {
-	Id        string `json:"id"`
-	Email     string `json:"email"`
-	CreatedAt string `json:"createdAt"`
+type MeResponse struct {
+  Id string `json:"id"`
+  Email string `json:"email"`
+  CreatedAt string `json:"createdAt"`
 }
 
-type V1UsersResponse struct {
-	Users []V1UsersResponseUsers `json:"users"`
+type UsersResponse struct {
+  Users []UsersResponseUsers `json:"users"`
 }
 
-type V1UserLoginRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+type UserLoginRequest struct {
+  Email string `json:"email"`
+  Password string `json:"password"`
 }
 
-type V1UserAuthResponse struct {
-	Token string `json:"token"`
+type UserAuthResponse struct {
+  Token string `json:"token"`
 }
 
-type V1HealthStatusRequest struct {
-	Health int `json:"health"`
+type HealthStatusRequest struct {
+  Health int `json:"health"`
 }
 
-type V1HealthStatusResponse struct {
-	Status string `json:"status"`
+type HealthStatusResponse struct {
+  Status string `json:"status"`
 }

@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"go-pmp/db"
 	"go-pmp/internal/handler"
+	"go-pmp/internal/routes"
 	"go-pmp/internal/util"
 	"log"
 	"net/http"
@@ -35,9 +36,15 @@ func main() {
 
 	addCors(r)
 
+	authRouter := chi.NewRouter()
+
+	routes.AddAuthRoutes(authRouter, h)
+
+	r.Mount("/api/auth", authRouter)
+
 	v1Router := chi.NewRouter()
 
-	addV1Routes(v1Router, h)
+	routes.AddV1Routes(v1Router, h)
 
 	r.Mount("/api/v1", v1Router)
 
@@ -93,21 +100,6 @@ func addCors(r *chi.Mux) {
 		AllowCredentials: false,
 		MaxAge:           300,
 	}))
-}
-
-func addV1Routes(r *chi.Mux, h *handler.Handler) {
-	r.Post("/auth/signup", h.SignUp)
-	r.Post("/auth/login", h.Login)
-	r.Post("/health", h.PostHealthStatus)
-	r.Get("/users", h.GetUsers)
-
-	r.Group(func(r chi.Router) {
-		r.Use(h.AuthMiddleware)
-		r.Post("/auth/logout", h.Logout)
-		r.Post("/auth/delete", h.DeleteAccount)
-		r.Get("/health", h.GetHealthStatus)
-		r.Get(("/me"), h.GetMe)
-	})
 }
 
 func addViteProxy(r *chi.Mux) {

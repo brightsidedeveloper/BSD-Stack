@@ -7,18 +7,18 @@ import (
 	"net/http"
 )
 
-func (h *Handler) GetHealthStatus(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) GetHealth(w http.ResponseWriter, r *http.Request) {
 	userID, ok := session.GetUserID(r.Context())
 	if !ok {
 		h.JSON.Error(w, http.StatusUnauthorized, "Not logged in")
 		return
 	}
-	h.JSON.Success(w, api.V1HealthStatusResponse{Status: userID})
+	h.JSON.Success(w, api.HealthStatusResponse{Status: userID})
 }
 
-func (h *Handler) PostHealthStatus(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) PostHealth(w http.ResponseWriter, r *http.Request) {
 
-	var req api.V1HealthStatusRequest
+	var req api.HealthStatusRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		h.JSON.ValidationError(w, "Invalid request")
 		return
@@ -29,5 +29,5 @@ func (h *Handler) PostHealthStatus(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.JSON.Success(w, api.V1HealthStatusResponse{Status: "ok"})
+	h.JSON.Success(w, api.HealthStatusResponse{Status: "ok"})
 }

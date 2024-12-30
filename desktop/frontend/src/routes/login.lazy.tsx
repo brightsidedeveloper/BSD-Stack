@@ -24,7 +24,7 @@ function RouteComponent() {
 
           if (isCreateAccount) {
             ez.post
-              .v1Signup({ email: emailText, password: passwordText })
+              .signup({ email: emailText, password: passwordText })
               .then(() => {
                 navigate({ to: '/' })
               })
@@ -35,7 +35,7 @@ function RouteComponent() {
           }
 
           ez.post
-            .v1Login({ email: emailText, password: passwordText })
+            .login({ email: emailText, password: passwordText })
             .then(() => {
               navigate({ to: '/' })
             })

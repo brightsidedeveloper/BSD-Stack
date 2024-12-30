@@ -18,7 +18,7 @@ function RouteComponent() {
           <button
             onClick={() => {
               ez.post
-                .v1DeleteAccount()
+                .deleteAccount()
                 .then(() => {
                   qc.clear()
                   navigate({ to: '/login' })
@@ -31,7 +31,7 @@ function RouteComponent() {
           <button
             onClick={() => {
               ez.post
-                .v1Logout()
+                .logout()
                 .then(() => {
                   qc.clear()
                   navigate({ to: '/login' })

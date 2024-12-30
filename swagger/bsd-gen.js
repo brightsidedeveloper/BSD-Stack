@@ -57,15 +57,11 @@ const generateTypes = (apiJson) => {
       .join('\n')}\n}`
   }
 
-  // Extract version from the first path (assuming consistent versioning in all paths)
-  const versionMatch = Object.keys(apiJson.paths)[0].match(/\/(v\d+)/)
-  const version = versionMatch ? versionMatch[1] : 'UnknownVersion'
   const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1)
 
-  // Generate schema types with version prepended
   const schemaTypes = Object.entries(components)
     .map(([name, schema]) => {
-      const typeName = `${capitalize(version)}${toPascalCase(name)}`
+      const typeName = toPascalCase(name)
       const properties = Object.entries(schema.properties || {})
         .map(([propName, propSchema]) => {
           let tsType
@@ -82,13 +78,12 @@ const generateTypes = (apiJson) => {
     })
     .join('\n\n')
 
-  // Generate query parameter types with version prepended
   const parameterTypes = Object.entries(apiJson.paths)
     .flatMap(([path, methods]) =>
       Object.entries(methods).flatMap(([method, details]) => {
         if (!details.parameters) return []
         const operationId = details.operationId ? capitalize(details.operationId) : 'UnnamedOperation'
-        const typeName = `${capitalize(version)}${operationId}Params`
+        const typeName = `${operationId}Params`
 
         const properties = details.parameters
           .map((param) => {
@@ -116,9 +111,6 @@ const generateTypes = (apiJson) => {
 const generateApiClient = (apiJson) => {
   const classes = { Get: [], Post: [], Put: [], Patch: [], Delete: [] }
 
-  // Extract version from the first path (assuming consistent versioning in all paths)
-  const versionMatch = Object.keys(apiJson.paths)[0].match(/\/(v\d+)/)
-  const version = versionMatch ? versionMatch[1] : 'UnknownVersion'
   const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1)
 
   const parameterTypes = Object.entries(apiJson.paths)
@@ -126,7 +118,7 @@ const generateApiClient = (apiJson) => {
       Object.entries(methods).flatMap(([method, details]) => {
         if (!details.parameters) return []
         const operationId = details.operationId ? capitalize(details.operationId) : 'UnnamedOperation'
-        return `${capitalize(version)}${operationId}Params`
+        return `${operationId}Params`
       })
     )
     .filter((typeName, index, self) => self.indexOf(typeName) === index) // Remove duplicates
@@ -136,19 +128,19 @@ const generateApiClient = (apiJson) => {
     Object.entries(methods).forEach(([method, details]) => {
       usedMethods = new Set([...usedMethods, method])
       const className = capitalize(method)
-      const operationId = details.operationId ? capitalize(details.operationId) : 'UnnamedOperation'
-      const functionName = `${version}${operationId}`
+      const operationId = details.operationId ? details.operationId : 'UnnamedOperation'
+      const functionName = `${operationId}`
       const responseSchema = details.responses?.['200']?.content?.['application/json']?.schema
       const responseType = responseSchema
         ? responseSchema.$ref
-          ? `${capitalize(version)}${toPascalCase(responseSchema.$ref.split('/').pop())}`
+          ? toPascalCase(responseSchema.$ref.split('/').pop())
           : mapOpenApiTypeToTsType(responseSchema.type, responseSchema.items)
         : 'void'
 
       const paramSchema = details.parameters?.length
-        ? `${capitalize(version)}${operationId}Params`
+        ? `${capitalize(operationId)}Params`
         : details.requestBody?.content?.['application/json']?.schema?.$ref
-        ? `${capitalize(version)}${toPascalCase(details.requestBody.content['application/json'].schema.$ref.split('/').pop())}`
+        ? toPascalCase(details.requestBody.content['application/json'].schema.$ref.split('/').pop())
         : null
 
       const paramsType = paramSchema ? `params: ${paramSchema}` : ''
@@ -157,7 +149,6 @@ const generateApiClient = (apiJson) => {
       const jsdoc = `
         /**
          * ${details.summary || 'No description provided'}
-         * @returns {Promise<${responseType}>}
          */
       `.trim()
 
@@ -186,10 +177,7 @@ const generateApiClient = (apiJson) => {
    */
 
   import { ${Array.from(usedMethods).join(', ')} } from './request';
-  import { ${[
-    ...Object.keys(apiJson.components.schemas).map((name) => `${capitalize(version)}${toPascalCase(name)}`),
-    ...parameterTypes,
-  ].join(', ')} } from './types';
+  import { ${[...Object.keys(apiJson.components.schemas).map((name) => toPascalCase(name)), ...parameterTypes].join(', ')} } from './types';
 
   ${classCode}
 
@@ -204,33 +192,31 @@ const generateApiClient = (apiJson) => {
 }
 
 const generateQueries = (apiJson) => {
-  // Extract version from the first path (assuming consistent versioning in all paths)
-  const versionMatch = Object.keys(apiJson.paths)[0].match(/\/(v\d+)/)
-  const version = versionMatch ? versionMatch[1] : 'UnknownVersion'
-
   const queries = Object.entries(apiJson.paths)
     .flatMap(([path, methods]) =>
       Object.entries(methods).flatMap(([method, details]) => {
         if (method.toLowerCase() !== 'get') return []
-        const operationId = details.operationId ? capitalize(details.operationId) : 'UnnamedOperation'
-        const functionName = `create${version.toUpperCase()}${operationId}Query`
-        const paramsType = details.parameters?.length ? `${version.toUpperCase()}${operationId}Params` : null
+        const operationId = details.operationId ? details.operationId : 'UnnamedOperation'
+        const functionName = `create${capitalize(operationId)}Query`
+        const paramsType = details.parameters?.length ? `${operationId}Params` : null
 
-        const paramsArg = paramsType ? `params: ${paramsType}, ` : ''
+        const paramsArg = paramsType ? `params: ${capitalize(paramsType)}, ` : ''
         return `
-export function ${functionName}<TData = Awaited<ReturnType<typeof ez.get.${version}${operationId}>>, TError = Error>(${paramsArg}opts: Omit<UseQueryOptions<Awaited<ReturnType<typeof ez.get.${version}${operationId}>>, TError, TData, ${version.toUpperCase()}${operationId}QueryKey>, 'queryKey' | 'queryFn'> = {}) {
+export function ${functionName}<TData = Awaited<ReturnType<typeof ez.get.${operationId}>>, TError = Error>(${paramsArg}opts: Omit<UseQueryOptions<Awaited<ReturnType<typeof ez.get.${operationId}>>, TError, TData, ${capitalize(
+          operationId
+        )}QueryKey>, 'queryKey' | 'queryFn'> = {}) {
   return queryOptions({
     ...opts,
-    queryKey: get${version.toUpperCase()}${operationId}QueryKey(${paramsType ? 'params' : ''}),
+    queryKey: get${capitalize(operationId)}QueryKey(${paramsType ? 'params' : ''}),
     queryFn() {
-      return ez.get.${version}${operationId}(${paramsType ? 'params' : ''});
+      return ez.get.${operationId}(${paramsType ? 'params' : ''});
     },
   });
 }
-export function get${version.toUpperCase()}${operationId}QueryKey(${paramsType ? 'params: ' + paramsType : ''}) {
-  return ['${operationId.toLowerCase()}'${paramsType ? ', params' : ''}] as const;
+export function get${capitalize(operationId)}QueryKey(${paramsType ? 'params: ' + capitalize(paramsType) : ''}) {
+  return ['${operationId}'${paramsType ? ', params' : ''}] as const;
 }
-export type ${version.toUpperCase()}${operationId}QueryKey = ReturnType<typeof get${version.toUpperCase()}${operationId}QueryKey>;
+export type ${capitalize(operationId)}QueryKey = ReturnType<typeof get${capitalize(operationId)}QueryKey>;
 `
       })
     )
@@ -247,9 +233,7 @@ import { ${[
     ...Object.entries(apiJson.paths)
       .flatMap(([_, methods]) =>
         Object.entries(methods).flatMap(([method, details]) =>
-          method.toLowerCase() === 'get' && details.parameters
-            ? `${capitalize(version)}${capitalize(details.operationId || 'UnnamedOperation')}Params`
-            : []
+          method.toLowerCase() === 'get' && details.parameters ? `${capitalize(details.operationId || 'UnnamedOperation')}Params` : []
         )
       )
       .filter((typeName, index, self) => self.indexOf(typeName) === index),
@@ -291,7 +275,7 @@ const generateGoStructs = (apiJson) => {
     const fields = Object.entries(schema.properties || {})
       .map(([fieldName, fieldSchema]) => {
         const goType = fieldSchema.$ref
-          ? `V1${toPascalCase(fieldSchema.$ref.split('/').pop())}`
+          ? toPascalCase(fieldSchema.$ref.split('/').pop())
           : mapOpenApiTypeToGoType(fieldSchema.type, fieldSchema.items, structName, fieldName)
         const jsonTag = `\`${'json:' + '"' + fieldName + '"'}\``
         return `  ${capitalize(fieldName)} ${goType} ${jsonTag}`
@@ -303,7 +287,7 @@ const generateGoStructs = (apiJson) => {
   }
 
   const generateStruct = (name, schema) => {
-    const structName = `V1${toPascalCase(name)}`
+    const structName = toPascalCase(name)
     const fields = Object.entries(schema.properties || {})
       .map(([propName, propSchema]) => {
         const goType = propSchema.$ref

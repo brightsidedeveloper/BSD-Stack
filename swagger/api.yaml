@@ -3,10 +3,11 @@ info:
   title: '8 API'
   version: '0.0.1'
 paths:
-  /api/v1/auth/signup:
+  /api/auth/signup:
     post:
       summary: 'Create a new user'
       operationId: 'signup'
+      security: []
       requestBody:
         description: 'User data to create'
         required: true
@@ -21,10 +22,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserAuthResponse'
-  /api/v1/auth/login:
+  /api/auth/login:
     post:
       summary: 'Login a user'
       operationId: 'login'
+      security: []
       requestBody:
         description: 'User data to login'
         required: true
@@ -39,10 +41,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserAuthResponse'
-  /api/v1/auth/logout:
+  /api/auth/logout:
     post:
       summary: 'Logout a user'
       operationId: 'logout'
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: 'User logged out'
@@ -50,10 +54,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserAuthResponse'
-  /api/v1/auth/delete:
+  /api/auth/deleteAccount:
     post:
       summary: 'Delete a user'
       operationId: 'deleteAccount'
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: 'User deleted'
@@ -65,6 +71,8 @@ paths:
     get:
       summary: 'Get the current user'
       operationId: 'me'
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: 'The current user'
@@ -76,6 +84,8 @@ paths:
     get:
       summary: 'Get a list of users'
       operationId: 'users'
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: 'A list of users'
@@ -87,6 +97,7 @@ paths:
     get:
       summary: 'Check the health of the API'
       operationId: 'health'
+      security: []
       parameters:
         - name: 'awesome'
           in: 'query'
@@ -105,6 +116,7 @@ paths:
     post:
       summary: 'Submit health data'
       operationId: 'health'
+      security: []
       requestBody:
         description: 'Health data to submit'
         required: true
