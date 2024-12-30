@@ -93,46 +93,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UsersResponse'
-  /api/v1/health:
-    get:
-      summary: 'Check the health of the API'
-      operationId: 'health'
-      security: []
-      parameters:
-        - name: 'awesome'
-          in: 'query'
-          description: 'A flag to indicate if the response should be awesome'
-          required: false
-          schema:
-            type: 'boolean'
-            example: true
-      responses:
-        '200':
-          description: 'The API is healthy'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HealthStatusResponse'
-    post:
-      summary: 'Submit health data'
-      operationId: 'health'
-      security: []
-      requestBody:
-        description: 'Health data to submit'
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/HealthStatusRequest'
-      responses:
-        '200':
-          description: 'Health status updated'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HealthStatusResponse'
 components:
   schemas:
+    TestResponse:
+      type: 'object'
+      properties:
+        message:
+          type: 'string'
+          example: 'The API is working'
     UserSignUpRequest:
       type: 'object'
       properties:
@@ -200,20 +168,3 @@ components:
         token:
           type: 'string'
           example: '1234-1234-1234-1234'
-    HealthStatusRequest:
-      type: 'object'
-      properties:
-        health:
-          type: 'integer'
-          example: 85
-          description: 'The health status value to submit'
-      required:
-        - 'health'
-    HealthStatusResponse:
-      type: 'object'
-      properties:
-        status:
-          type: 'string'
-          example: 'healthy'
-      required:
-        - 'status'

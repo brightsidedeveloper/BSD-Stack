@@ -5,7 +5,7 @@
 
 import { UseQueryOptions, queryOptions } from '@tanstack/react-query';
 import ez from './ez';
-import { HealthParams } from './types';
+import {  } from './types';
 
 
 export function createMeQuery<TData = Awaited<ReturnType<typeof ez.get.me>>, TError = Error>(opts: Omit<UseQueryOptions<Awaited<ReturnType<typeof ez.get.me>>, TError, TData, MeQueryKey>, 'queryKey' | 'queryFn'> = {}) {
@@ -37,20 +37,4 @@ export function getUsersQueryKey() {
   return ['users'] as const;
 }
 export type UsersQueryKey = ReturnType<typeof getUsersQueryKey>;
-
-
-
-export function createHealthQuery<TData = Awaited<ReturnType<typeof ez.get.health>>, TError = Error>(params: HealthParams, opts: Omit<UseQueryOptions<Awaited<ReturnType<typeof ez.get.health>>, TError, TData, HealthQueryKey>, 'queryKey' | 'queryFn'> = {}) {
-  return queryOptions({
-    ...opts,
-    queryKey: getHealthQueryKey(params),
-    queryFn() {
-      return ez.get.health(params);
-    },
-  });
-}
-export function getHealthQueryKey(params: HealthParams) {
-  return ['health', params] as const;
-}
-export type HealthQueryKey = ReturnType<typeof getHealthQueryKey>;
 

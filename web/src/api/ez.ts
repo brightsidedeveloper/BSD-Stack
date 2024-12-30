@@ -4,7 +4,7 @@
    */
 
   import { post, get } from './request';
-  import { UserSignUpRequest, MeResponse, UsersResponse, UserLoginRequest, UserAuthResponse, HealthStatusRequest, HealthStatusResponse, HealthParams } from './types';
+  import { TestResponse, UserSignUpRequest, MeResponse, UsersResponse, UserLoginRequest, UserAuthResponse } from './types';
 
   
   class Get {
@@ -22,14 +22,6 @@
          */
         static async users() {
           return get<UsersResponse>(`/api/v1/users`);
-        }
-      
-  
-        /**
-         * Check the health of the API
-         */
-        static async health(params: HealthParams) {
-          return get<HealthStatusResponse>(`/api/v1/health`, params);
         }
       
   }
@@ -66,14 +58,6 @@
          */
         static async deleteAccount() {
           return post<UserAuthResponse>(`/api/auth/deleteAccount`);
-        }
-      
-  
-        /**
-         * Submit health data
-         */
-        static async health(params: HealthStatusRequest) {
-          return post<HealthStatusResponse>(`/api/v1/health`, params);
         }
       
   }

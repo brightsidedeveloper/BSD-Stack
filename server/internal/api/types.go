@@ -8,6 +8,10 @@ type UsersResponseUsers struct {
   CreatedAt string `json:"createdAt"`
 }
 
+type TestResponse struct {
+  Message string `json:"message"`
+}
+
 type UserSignUpRequest struct {
   Email string `json:"email"`
   Password string `json:"password"`
@@ -30,12 +34,4 @@ type UserLoginRequest struct {
 
 type UserAuthResponse struct {
   Token string `json:"token"`
-}
-
-type HealthStatusRequest struct {
-  Health int `json:"health"`
-}
-
-type HealthStatusResponse struct {
-  Status string `json:"status"`
 }

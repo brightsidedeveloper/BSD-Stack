@@ -12,6 +12,7 @@ const nativeApiDir = './native/api'
 const desktopApiDir = './desktop/frontend/src/api'
 const goApiDir = '../server/internal/api'
 const goRoutesDir = '../server/internal/routes'
+const goHandlersDir = '../server/internal/handler'
 const outputBSDFile = 'ez.ts'
 const outputTypesFile = 'types.ts'
 const desktopRequestTemplateFilePath = './swagger/util/request.desktop.ts'
@@ -375,6 +376,79 @@ ${routeFunctions}
   `
 }
 
+const generateHandlers = (apiJson, handlerDir) => {
+  Object.entries(apiJson.paths).forEach(([apiPath, methods]) => {
+    const prefixMatch = apiPath.match(/^\/api\/([^\/]+)/) // Extract group from path (e.g., `v1` from `/api/v1`)
+    const groupName = prefixMatch ? prefixMatch[1] : 'root'
+    const fileName = `${groupName}.go`
+    const filePath = path.join(handlerDir, fileName)
+    // Ensure the file exists
+    if (!fs.existsSync(filePath)) {
+      fs.writeFileSync(
+        filePath,
+        `package handler\n\nimport (\n\t"encoding/json"\n\t"net/http"\n\t"go-pmp/api"\n\t"go-pmp/session"\n)\n`,
+        'utf8'
+      )
+    }
+
+    let fileContent = fs.readFileSync(filePath, 'utf8')
+
+    Object.entries(methods).forEach(([method, details]) => {
+      const operationId = details.operationId || 'UnnamedOperation'
+      const handlerName = `${capitalize(method)}${capitalize(operationId)}`
+
+      // Skip if handler already exists
+      if (fileContent.includes(`func (h *Handler) ${handlerName}(`)) {
+        return
+      }
+
+      // Determine if the route is secured
+      const isSecured = details.security?.length
+
+      // Determine if request body is present
+      const requestBody = details.requestBody?.content?.['application/json']?.schema?.$ref
+      const requestType = requestBody ? requestBody.split('/').pop() : null
+
+      // Determine response type
+      const responseType = details.responses?.['200']?.content?.['application/json']?.schema?.$ref
+      const responseTypeName = responseType ? responseType.split('/').pop() : 'interface{}'
+
+      // Generate handler content
+      let handler = `func (h *Handler) ${handlerName}(w http.ResponseWriter, r *http.Request) {\n`
+
+      if (isSecured) {
+        handler += `
+\tuserID, ok := session.GetUserID(r.Context())
+\tif !ok {
+\t\th.JSON.Error(w, http.StatusUnauthorized, "Not logged in")
+\t\treturn
+\t}\n`
+      }
+
+      if (requestType) {
+        handler += `
+\tvar req api.${capitalize(requestType)}
+\tif err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+\t\th.JSON.ValidationError(w, "Invalid request")
+\t\treturn
+\t}\n`
+      }
+
+      handler += `
+\t// TODO: Write Code Here
+
+\th.JSON.Write(w, http.StatusOK, api.${capitalize(responseTypeName)}{
+\t\tMessage: "TODO",
+\t})
+}\n`
+
+      // Append the new handler to the file
+      fs.appendFileSync(filePath, `\n${handler}`, 'utf8')
+      fileContent += handler // Update file content for further checks
+    })
+  })
+}
+
 console.log(
   chalk.blueBright(`
     ███╗░░░███╗░█████╗░██╗░░██╗███████╗  ██████╗░░██████╗██████╗░
@@ -467,6 +541,11 @@ const main = () => {
   fs.mkdirSync(routesOutputDir, { recursive: true })
   fs.writeFileSync(routesOutputFile, generatedRoutes, 'utf8')
   spinnerRoutes.succeed(chalk.green('Generated Go routes'))
+
+  const handlerDir = path.resolve(__dirname, goHandlersDir)
+  const spinnerHandlers = logStep('Generating handler templates')
+  generateHandlers(apiJson, handlerDir)
+  spinnerHandlers.succeed(chalk.green('Generated handler templates'))
 
   log(chalk.green('\nDone!\n'))
 }

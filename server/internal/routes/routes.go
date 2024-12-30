@@ -23,8 +23,7 @@ func AddAuthRoutes(r *chi.Mux, h *handler.Handler) {
 
 
 func AddV1Routes(r *chi.Mux, h *handler.Handler) {
-  r.Get("/health", h.GetHealth)
-  r.Post("/health", h.PostHealth)
+  
   
   r.Group(func(r chi.Router) {
     r.Use(h.AuthMiddleware)

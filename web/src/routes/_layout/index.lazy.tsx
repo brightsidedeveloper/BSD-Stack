@@ -14,6 +14,7 @@ function RouteComponent() {
       <h3 className="text-center font-black leading-relaxed">
         Welcome to BSD,
         <br /> {me.email}!
+        <br />
       </h3>
     </section>
   )

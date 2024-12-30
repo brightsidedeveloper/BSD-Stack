@@ -5,12 +5,14 @@ import (
 	"fmt"
 	"go-pmp/internal/api"
 	"go-pmp/internal/session"
+
 	"net/http"
 	"time"
 )
 
 func (h *Handler) GetUsers(w http.ResponseWriter, r *http.Request) {
-	ctx := context.Background()
+	ctx, cancel := context.WithTimeout(r.Context(), 3*time.Second)
+	defer cancel()
 
 	rows, err := h.DB.QueryContext(ctx, "SELECT id, email, created_at FROM auth.users")
 

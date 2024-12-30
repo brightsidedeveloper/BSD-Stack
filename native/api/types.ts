@@ -3,7 +3,11 @@
    * Auto-generated File - BSD
    */
   
-  export type UserSignUpRequest = {
+  export type TestResponse = {
+  message?: string;
+}
+
+export type UserSignUpRequest = {
   email: string;
   password: string;
 }
@@ -31,15 +35,5 @@ export type UserAuthResponse = {
   token?: string;
 }
 
-export type HealthStatusRequest = {
-  health: number;
-}
-
-export type HealthStatusResponse = {
-  status: string;
-}
-
-  export type HealthParams = {
-  awesome?: boolean;
-}
+  
   
