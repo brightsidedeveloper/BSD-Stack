@@ -1,6 +1,7 @@
 import { createLazyFileRoute, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
 import ez from '../api/ez'
+import { ShowAlert } from '../../wailsjs/go/main/App'
 
 export const Route = createLazyFileRoute('/login')({
   component: RouteComponent,
@@ -28,7 +29,7 @@ function RouteComponent() {
                 navigate({ to: '/' })
               })
               .catch((err) => {
-                alert(err.message)
+                ShowAlert(err.message)
               })
             return
           }
@@ -39,7 +40,7 @@ function RouteComponent() {
               navigate({ to: '/' })
             })
             .catch((err) => {
-              alert(err.message)
+              ShowAlert(err.message)
             })
         }}
         className="border rounded-lg shadow-lg p-4 mt-4 max-w-md w-full"

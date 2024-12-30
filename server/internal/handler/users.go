@@ -58,8 +58,6 @@ func (h *Handler) GetMe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println("id", id)
-
 	h.JSON.Write(w, http.StatusOK, api.V1MeResponse{
 		Id:        id,
 		Email:     email,

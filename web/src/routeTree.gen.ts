@@ -13,22 +13,22 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as LoginImport } from './routes/login'
+import { Route as LayoutRouteImport } from './routes/_layout/route'
 
 // Create Virtual Routes
 
-const LoginLazyImport = createFileRoute('/login')()
-const LayoutRouteLazyImport = createFileRoute('/_layout')()
 const LayoutIndexLazyImport = createFileRoute('/_layout/')()
 
 // Create/Update Routes
 
-const LoginLazyRoute = LoginLazyImport.update({
+const LoginRoute = LoginImport.update({
   id: '/login',
   path: '/login',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/login.lazy').then((d) => d.Route))
 
-const LayoutRouteLazyRoute = LayoutRouteLazyImport.update({
+const LayoutRouteRoute = LayoutRouteImport.update({
   id: '/_layout',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/_layout/route.lazy').then((d) => d.Route))
@@ -36,7 +36,7 @@ const LayoutRouteLazyRoute = LayoutRouteLazyImport.update({
 const LayoutIndexLazyRoute = LayoutIndexLazyImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => LayoutRouteLazyRoute,
+  getParentRoute: () => LayoutRouteRoute,
 } as any).lazy(() => import('./routes/_layout/index.lazy').then((d) => d.Route))
 
 // Populate the FileRoutesByPath interface
@@ -47,14 +47,14 @@ declare module '@tanstack/react-router' {
       id: '/_layout'
       path: ''
       fullPath: ''
-      preLoaderRoute: typeof LayoutRouteLazyImport
+      preLoaderRoute: typeof LayoutRouteImport
       parentRoute: typeof rootRoute
     }
     '/login': {
       id: '/login'
       path: '/login'
       fullPath: '/login'
-      preLoaderRoute: typeof LoginLazyImport
+      preLoaderRoute: typeof LoginImport
       parentRoute: typeof rootRoute
     }
     '/_layout/': {
@@ -62,40 +62,40 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof LayoutIndexLazyImport
-      parentRoute: typeof LayoutRouteLazyImport
+      parentRoute: typeof LayoutRouteImport
     }
   }
 }
 
 // Create and export the route tree
 
-interface LayoutRouteLazyRouteChildren {
+interface LayoutRouteRouteChildren {
   LayoutIndexLazyRoute: typeof LayoutIndexLazyRoute
 }
 
-const LayoutRouteLazyRouteChildren: LayoutRouteLazyRouteChildren = {
+const LayoutRouteRouteChildren: LayoutRouteRouteChildren = {
   LayoutIndexLazyRoute: LayoutIndexLazyRoute,
 }
 
-const LayoutRouteLazyRouteWithChildren = LayoutRouteLazyRoute._addFileChildren(
-  LayoutRouteLazyRouteChildren,
+const LayoutRouteRouteWithChildren = LayoutRouteRoute._addFileChildren(
+  LayoutRouteRouteChildren,
 )
 
 export interface FileRoutesByFullPath {
-  '': typeof LayoutRouteLazyRouteWithChildren
-  '/login': typeof LoginLazyRoute
+  '': typeof LayoutRouteRouteWithChildren
+  '/login': typeof LoginRoute
   '/': typeof LayoutIndexLazyRoute
 }
 
 export interface FileRoutesByTo {
-  '/login': typeof LoginLazyRoute
+  '/login': typeof LoginRoute
   '/': typeof LayoutIndexLazyRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
-  '/_layout': typeof LayoutRouteLazyRouteWithChildren
-  '/login': typeof LoginLazyRoute
+  '/_layout': typeof LayoutRouteRouteWithChildren
+  '/login': typeof LoginRoute
   '/_layout/': typeof LayoutIndexLazyRoute
 }
 
@@ -109,13 +109,13 @@ export interface FileRouteTypes {
 }
 
 export interface RootRouteChildren {
-  LayoutRouteLazyRoute: typeof LayoutRouteLazyRouteWithChildren
-  LoginLazyRoute: typeof LoginLazyRoute
+  LayoutRouteRoute: typeof LayoutRouteRouteWithChildren
+  LoginRoute: typeof LoginRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  LayoutRouteLazyRoute: LayoutRouteLazyRouteWithChildren,
-  LoginLazyRoute: LoginLazyRoute,
+  LayoutRouteRoute: LayoutRouteRouteWithChildren,
+  LoginRoute: LoginRoute,
 }
 
 export const routeTree = rootRoute
@@ -133,13 +133,13 @@ export const routeTree = rootRoute
       ]
     },
     "/_layout": {
-      "filePath": "_layout/route.lazy.tsx",
+      "filePath": "_layout/route.ts",
       "children": [
         "/_layout/"
       ]
     },
     "/login": {
-      "filePath": "login.lazy.tsx"
+      "filePath": "login.ts"
     },
     "/_layout/": {
       "filePath": "_layout/index.lazy.tsx",

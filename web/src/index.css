@@ -5,3 +5,7 @@
 html {
   @apply bg-gray-900 text-white min-h-dvh;
 }
+
+* {
+  @apply border-gray-700;
+}
