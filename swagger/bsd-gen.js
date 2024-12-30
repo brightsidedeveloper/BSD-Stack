@@ -362,6 +362,8 @@ func ${functionName}(r *chi.Mux, h *handler.Handler) {
     .join('\n')
 
   return `
+// Auto-generated File - BSD
+
 package routes
 
 import (
