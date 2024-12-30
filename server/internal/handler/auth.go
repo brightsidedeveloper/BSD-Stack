@@ -99,7 +99,6 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		h.JSON.Error(w, http.StatusUnauthorized, "Invalid email or password")
 		return
 	}
-
 	writeJWT(w, h, id)
 }
 

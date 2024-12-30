@@ -106,6 +106,7 @@ func addV1Routes(r *chi.Mux, h *handler.Handler) {
 		r.Post("/auth/logout", h.Logout)
 		r.Post("/auth/delete", h.DeleteAccount)
 		r.Get("/health", h.GetHealthStatus)
+		r.Get(("/me"), h.GetMe)
 	})
 }
 

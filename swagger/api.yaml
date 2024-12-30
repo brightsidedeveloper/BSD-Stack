@@ -61,6 +61,17 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserAuthResponse'
+  /api/v1/me:
+    get:
+      summary: 'Get the current user'
+      operationId: 'me'
+      responses:
+        '200':
+          description: 'The current user'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MeResponse'
   /api/v1/users:
     get:
       summary: 'Get a list of users'
@@ -122,6 +133,22 @@ components:
       required:
         - 'email'
         - 'password'
+    MeResponse:
+      type: 'object'
+      properties:
+        id:
+          type: 'string'
+          example: '123'
+        email:
+          type: 'string'
+          example: 'tim@brightsidedeveloper.com'
+        createdAt:
+          type: 'string'
+          example: '??????'
+      required:
+        - 'id'
+        - 'email'
+        - 'createdAt'
     UsersResponse:
       type: 'object'
       properties:

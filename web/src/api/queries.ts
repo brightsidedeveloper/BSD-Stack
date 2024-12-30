@@ -8,6 +8,22 @@ import ez from './ez';
 import { V1HealthParams } from './types';
 
 
+export function createV1MeQuery<TData = Awaited<ReturnType<typeof ez.get.v1Me>>, TError = Error>(opts: Omit<UseQueryOptions<Awaited<ReturnType<typeof ez.get.v1Me>>, TError, TData, V1MeQueryKey>, 'queryKey' | 'queryFn'> = {}) {
+  return queryOptions({
+    ...opts,
+    queryKey: getV1MeQueryKey(),
+    queryFn() {
+      return ez.get.v1Me();
+    },
+  });
+}
+export function getV1MeQueryKey() {
+  return ['me'] as const;
+}
+export type V1MeQueryKey = ReturnType<typeof getV1MeQueryKey>;
+
+
+
 export function createV1UsersQuery<TData = Awaited<ReturnType<typeof ez.get.v1Users>>, TError = Error>(opts: Omit<UseQueryOptions<Awaited<ReturnType<typeof ez.get.v1Users>>, TError, TData, V1UsersQueryKey>, 'queryKey' | 'queryFn'> = {}) {
   return queryOptions({
     ...opts,

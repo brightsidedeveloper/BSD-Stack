@@ -8,6 +8,12 @@
   password: string;
 }
 
+export type V1MeResponse = {
+  id: string;
+  email: string;
+  createdAt: string;
+}
+
 export type V1UsersResponse = {
   users?: Array<{
   id: string;

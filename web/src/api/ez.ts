@@ -4,11 +4,20 @@
    */
 
   import { post, get } from './request';
-  import { V1UserSignUpRequest, V1UsersResponse, V1UserLoginRequest, V1UserAuthResponse, V1HealthStatusRequest, V1HealthStatusResponse, V1HealthParams } from './types';
+  import { V1UserSignUpRequest, V1MeResponse, V1UsersResponse, V1UserLoginRequest, V1UserAuthResponse, V1HealthStatusRequest, V1HealthStatusResponse, V1HealthParams } from './types';
 
   
   class Get {
     
+        /**
+         * Get the current user
+         * @returns {Promise<V1MeResponse>}
+         */
+        static async v1Me() {
+          return get<V1MeResponse>(`/api/v1/me`);
+        }
+      
+  
         /**
          * Get a list of users
          * @returns {Promise<V1UsersResponse>}

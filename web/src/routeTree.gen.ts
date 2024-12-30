@@ -16,60 +16,106 @@ import { Route as rootRoute } from './routes/__root'
 
 // Create Virtual Routes
 
-const IndexLazyImport = createFileRoute('/')()
+const LoginLazyImport = createFileRoute('/login')()
+const LayoutRouteLazyImport = createFileRoute('/_layout')()
+const LayoutIndexLazyImport = createFileRoute('/_layout/')()
 
 // Create/Update Routes
 
-const IndexLazyRoute = IndexLazyImport.update({
+const LoginLazyRoute = LoginLazyImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/login.lazy').then((d) => d.Route))
+
+const LayoutRouteLazyRoute = LayoutRouteLazyImport.update({
+  id: '/_layout',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/_layout/route.lazy').then((d) => d.Route))
+
+const LayoutIndexLazyRoute = LayoutIndexLazyImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
+  getParentRoute: () => LayoutRouteLazyRoute,
+} as any).lazy(() => import('./routes/_layout/index.lazy').then((d) => d.Route))
 
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
+    '/_layout': {
+      id: '/_layout'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof LayoutRouteLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/_layout/': {
+      id: '/_layout/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexLazyImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof LayoutIndexLazyImport
+      parentRoute: typeof LayoutRouteLazyImport
     }
   }
 }
 
 // Create and export the route tree
 
+interface LayoutRouteLazyRouteChildren {
+  LayoutIndexLazyRoute: typeof LayoutIndexLazyRoute
+}
+
+const LayoutRouteLazyRouteChildren: LayoutRouteLazyRouteChildren = {
+  LayoutIndexLazyRoute: LayoutIndexLazyRoute,
+}
+
+const LayoutRouteLazyRouteWithChildren = LayoutRouteLazyRoute._addFileChildren(
+  LayoutRouteLazyRouteChildren,
+)
+
 export interface FileRoutesByFullPath {
-  '/': typeof IndexLazyRoute
+  '': typeof LayoutRouteLazyRouteWithChildren
+  '/login': typeof LoginLazyRoute
+  '/': typeof LayoutIndexLazyRoute
 }
 
 export interface FileRoutesByTo {
-  '/': typeof IndexLazyRoute
+  '/login': typeof LoginLazyRoute
+  '/': typeof LayoutIndexLazyRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
-  '/': typeof IndexLazyRoute
+  '/_layout': typeof LayoutRouteLazyRouteWithChildren
+  '/login': typeof LoginLazyRoute
+  '/_layout/': typeof LayoutIndexLazyRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '' | '/login' | '/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/login' | '/'
+  id: '__root__' | '/_layout' | '/login' | '/_layout/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
-  IndexLazyRoute: typeof IndexLazyRoute
+  LayoutRouteLazyRoute: typeof LayoutRouteLazyRouteWithChildren
+  LoginLazyRoute: typeof LoginLazyRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexLazyRoute: IndexLazyRoute,
+  LayoutRouteLazyRoute: LayoutRouteLazyRouteWithChildren,
+  LoginLazyRoute: LoginLazyRoute,
 }
 
 export const routeTree = rootRoute
@@ -82,11 +128,22 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/"
+        "/_layout",
+        "/login"
       ]
     },
-    "/": {
-      "filePath": "index.lazy.tsx"
+    "/_layout": {
+      "filePath": "_layout/route.lazy.tsx",
+      "children": [
+        "/_layout/"
+      ]
+    },
+    "/login": {
+      "filePath": "login.lazy.tsx"
+    },
+    "/_layout/": {
+      "filePath": "_layout/index.lazy.tsx",
+      "parent": "/_layout"
     }
   }
 }
