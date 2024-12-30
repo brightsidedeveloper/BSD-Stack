@@ -2,7 +2,7 @@ package handler
 
 import (
 	"encoding/json"
-	"go-pmp/api"
+	"go-pmp/internal/api"
 	"go-pmp/internal/session"
 	"net/http"
 )

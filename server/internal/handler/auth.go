@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"go-pmp/api"
+	"go-pmp/internal/api"
 	"go-pmp/internal/session"
 	"net/http"
 	"os"
@@ -24,7 +24,7 @@ func isValidEmail(email string) bool {
 	return emailRegex.MatchString(email)
 }
 
-func (h *Handler) SignUp(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) PostSignup(w http.ResponseWriter, r *http.Request) {
 	var req api.UserSignUpRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		h.JSON.ValidationError(w, "Invalid Request")
@@ -70,7 +70,7 @@ func (h *Handler) SignUp(w http.ResponseWriter, r *http.Request) {
 	writeJWT(w, h, id)
 }
 
-func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) PostLogin(w http.ResponseWriter, r *http.Request) {
 	var req api.UserLoginRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		h.JSON.ValidationError(w, "Invalid Request")
@@ -102,12 +102,12 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	writeJWT(w, h, id)
 }
 
-func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) PostLogout(w http.ResponseWriter, r *http.Request) {
 	setAuthCookie(w, "")
 	h.JSON.Write(w, http.StatusOK, api.UserAuthResponse{Token: ""})
 }
 
-func (h *Handler) DeleteAccount(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) PostDeleteAccount(w http.ResponseWriter, r *http.Request) {
 	userID, ok := session.GetUserID(r.Context())
 	if !ok || userID == "" {
 		h.JSON.Error(w, http.StatusUnauthorized, "Unauthorized")
@@ -125,7 +125,7 @@ func (h *Handler) DeleteAccount(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.Logout(w, r)
+	h.PostLogout(w, r)
 }
 
 func (h *Handler) AuthMiddleware(next http.Handler) http.Handler {

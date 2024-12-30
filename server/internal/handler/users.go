@@ -3,7 +3,7 @@ package handler
 import (
 	"context"
 	"fmt"
-	"go-pmp/api"
+	"go-pmp/internal/api"
 	"go-pmp/internal/session"
 	"net/http"
 	"time"

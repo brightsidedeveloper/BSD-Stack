@@ -10,7 +10,8 @@ const apiFilePath = './swagger/api.yaml'
 const webApiDir = './web/src/api'
 const nativeApiDir = './native/api'
 const desktopApiDir = './desktop/frontend/src/api'
-const goApiDir = '../server/api'
+const goApiDir = '../server/internal/api'
+const goRoutesDir = '../server/internal/routes'
 const outputBSDFile = 'ez.ts'
 const outputTypesFile = 'types.ts'
 const desktopRequestTemplateFilePath = './swagger/util/request.desktop.ts'
@@ -309,6 +310,69 @@ const generateGoStructs = (apiJson) => {
   return `// Auto-generated File - BSD\n\npackage api\n\n${allStructs.join('\n\n')}`
 }
 
+const generateRoutes = (apiJson) => {
+  const routeGroups = {} // Dynamic groups for inferred prefixes
+
+  // Iterate over paths and organize them into groups based on prefixes
+  Object.entries(apiJson.paths).forEach(([path, methods]) => {
+    const prefixMatch = path.match(/^\/api\/([^\/]+)/) // Match the first part of the path after `/api/`
+    const groupName = prefixMatch ? prefixMatch[1] : 'root'
+
+    if (!routeGroups[groupName]) {
+      routeGroups[groupName] = { secured: [], unsecured: [] }
+    }
+
+    Object.entries(methods).forEach(([method, details]) => {
+      const operationId = details.operationId || 'UnnamedOperation'
+      const handlerName = `${capitalize(method)}${capitalize(operationId)}`
+      const routePath = path.replace(/^\/api\/[^\/]+/, '') // Remove the prefix for group-specific routes
+
+      const routeDefinition = `r.${capitalize(method)}("${routePath}", h.${handlerName})`
+
+      if (details.security?.length) {
+        routeGroups[groupName].secured.push(routeDefinition)
+      } else {
+        routeGroups[groupName].unsecured.push(routeDefinition)
+      }
+    })
+  })
+
+  // Generate route functions for each group
+  const routeFunctions = Object.entries(routeGroups)
+    .map(([groupName, { secured, unsecured }]) => {
+      const functionName = `Add${capitalize(groupName)}Routes`
+      const securedRoutes = secured.length
+        ? `
+  r.Group(func(r chi.Router) {
+    r.Use(h.AuthMiddleware)
+    ${secured.join('\n    ')}
+  })
+`
+        : ''
+
+      const unsecuredRoutes = unsecured.join('\n  ')
+
+      return `
+func ${functionName}(r *chi.Mux, h *handler.Handler) {
+  ${unsecuredRoutes}
+  ${securedRoutes}
+}
+`
+    })
+    .join('\n')
+
+  return `
+package routes
+
+import (
+  "go-pmp/internal/handler"
+  "github.com/go-chi/chi/v5"
+)
+
+${routeFunctions}
+  `
+}
+
 console.log(
   chalk.blueBright(`
     ███╗░░░███╗░█████╗░██╗░░██╗███████╗  ██████╗░░██████╗██████╗░
@@ -393,6 +457,14 @@ const main = () => {
   const goOutputFile = path.join(goOutputDir, 'types.go')
   fs.writeFileSync(goOutputFile, generatedGoStructs, 'utf8')
   spinner5.succeed(chalk.green(`Generated Go structs in ${goApiDir.replace('.', '') + '/types.go'}`))
+
+  const spinnerRoutes = logStep('Generating Go routes')
+  const generatedRoutes = generateRoutes(apiJson)
+  const routesOutputDir = path.resolve(__dirname, goRoutesDir)
+  const routesOutputFile = path.join(routesOutputDir, 'routes.go')
+  fs.mkdirSync(routesOutputDir, { recursive: true })
+  fs.writeFileSync(routesOutputFile, generatedRoutes, 'utf8')
+  spinnerRoutes.succeed(chalk.green('Generated Go routes'))
 
   log(chalk.green('\nDone!\n'))
 }
