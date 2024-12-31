@@ -10,22 +10,14 @@ function RouteComponent() {
       <header className="bg-gray-800 text-white p-4 flex items-center justify-between sticky top-0 z-10">
         <h1 className="text-2xl font-semibold">BSD Stack Admin</h1>
         <div className="flex items-center space-x-4">
-          <Link
-            to="/"
-            activeProps={{
-              className: 'text-blue-500',
-            }}
-          >
-            Swagger
-          </Link>
-          <Link
-            to="/database"
-            activeProps={{
-              className: 'text-blue-500',
-            }}
-          >
-            Database
-          </Link>
+          {routes.map((route) => (
+            <Link
+              {...route}
+              activeProps={{
+                className: 'text-blue-500',
+              }}
+            />
+          ))}
         </div>
       </header>
       <main className="flex-1">
@@ -34,3 +26,11 @@ function RouteComponent() {
     </div>
   )
 }
+
+const routes = [
+  { to: '/', children: 'Dashboard' },
+  { to: '/api', children: 'Swagger API' },
+  { to: '/tables', children: 'Tables' },
+  { to: '/migrations', children: 'Migrations' },
+  { to: '/s3', children: 'S3' },
+] as const

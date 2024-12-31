@@ -6,6 +6,10 @@ export function ReadAPI() {
   return window['go']['main']['App']['ReadAPI']();
 }
 
+export function RunMakeBSD() {
+  return window['go']['main']['App']['RunMakeBSD']();
+}
+
 export function UpdateAPI(arg1) {
   return window['go']['main']['App']['UpdateAPI'](arg1);
 }

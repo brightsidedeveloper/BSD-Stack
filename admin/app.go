@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"os"
+	"os/exec"
 
 	"gopkg.in/yaml.v3"
 )
@@ -52,4 +53,15 @@ func (a *App) ReadAPI() (string, error) {
 // UpdateAPI updates the YAML file with the provided content
 func (a *App) UpdateAPI(newContent string) error {
 	return os.WriteFile("../swagger/api.yaml", []byte(newContent), 0644)
+}
+
+func (a *App) RunMakeBSD() error {
+	cmd := exec.Command("make", "bsd")
+	cmd.Dir = "../"
+
+	_, err := cmd.CombinedOutput()
+	if err != nil {
+		return err
+	}
+	return nil
 }

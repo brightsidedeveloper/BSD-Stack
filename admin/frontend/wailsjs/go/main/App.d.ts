@@ -3,4 +3,6 @@
 
 export function ReadAPI():Promise<string>;
 
+export function RunMakeBSD():Promise<void>;
+
 export function UpdateAPI(arg1:string):Promise<void>;

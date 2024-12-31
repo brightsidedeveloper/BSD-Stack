@@ -18,7 +18,11 @@ import { Route as rootRoute } from './routes/__root'
 
 const LayoutRouteLazyImport = createFileRoute('/_layout')()
 const LayoutIndexLazyImport = createFileRoute('/_layout/')()
-const LayoutDatabaseLazyImport = createFileRoute('/_layout/database')()
+const LayoutTablesLazyImport = createFileRoute('/_layout/tables')()
+const LayoutSchemasLazyImport = createFileRoute('/_layout/schemas')()
+const LayoutS3LazyImport = createFileRoute('/_layout/s3')()
+const LayoutMigrationsLazyImport = createFileRoute('/_layout/migrations')()
+const LayoutApiLazyImport = createFileRoute('/_layout/api')()
 
 // Create/Update Routes
 
@@ -33,13 +37,41 @@ const LayoutIndexLazyRoute = LayoutIndexLazyImport.update({
   getParentRoute: () => LayoutRouteLazyRoute,
 } as any).lazy(() => import('./routes/_layout/index.lazy').then((d) => d.Route))
 
-const LayoutDatabaseLazyRoute = LayoutDatabaseLazyImport.update({
-  id: '/database',
-  path: '/database',
+const LayoutTablesLazyRoute = LayoutTablesLazyImport.update({
+  id: '/tables',
+  path: '/tables',
   getParentRoute: () => LayoutRouteLazyRoute,
 } as any).lazy(() =>
-  import('./routes/_layout/database.lazy').then((d) => d.Route),
+  import('./routes/_layout/tables.lazy').then((d) => d.Route),
 )
+
+const LayoutSchemasLazyRoute = LayoutSchemasLazyImport.update({
+  id: '/schemas',
+  path: '/schemas',
+  getParentRoute: () => LayoutRouteLazyRoute,
+} as any).lazy(() =>
+  import('./routes/_layout/schemas.lazy').then((d) => d.Route),
+)
+
+const LayoutS3LazyRoute = LayoutS3LazyImport.update({
+  id: '/s3',
+  path: '/s3',
+  getParentRoute: () => LayoutRouteLazyRoute,
+} as any).lazy(() => import('./routes/_layout/s3.lazy').then((d) => d.Route))
+
+const LayoutMigrationsLazyRoute = LayoutMigrationsLazyImport.update({
+  id: '/migrations',
+  path: '/migrations',
+  getParentRoute: () => LayoutRouteLazyRoute,
+} as any).lazy(() =>
+  import('./routes/_layout/migrations.lazy').then((d) => d.Route),
+)
+
+const LayoutApiLazyRoute = LayoutApiLazyImport.update({
+  id: '/api',
+  path: '/api',
+  getParentRoute: () => LayoutRouteLazyRoute,
+} as any).lazy(() => import('./routes/_layout/api.lazy').then((d) => d.Route))
 
 // Populate the FileRoutesByPath interface
 
@@ -52,11 +84,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutRouteLazyImport
       parentRoute: typeof rootRoute
     }
-    '/_layout/database': {
-      id: '/_layout/database'
-      path: '/database'
-      fullPath: '/database'
-      preLoaderRoute: typeof LayoutDatabaseLazyImport
+    '/_layout/api': {
+      id: '/_layout/api'
+      path: '/api'
+      fullPath: '/api'
+      preLoaderRoute: typeof LayoutApiLazyImport
+      parentRoute: typeof LayoutRouteLazyImport
+    }
+    '/_layout/migrations': {
+      id: '/_layout/migrations'
+      path: '/migrations'
+      fullPath: '/migrations'
+      preLoaderRoute: typeof LayoutMigrationsLazyImport
+      parentRoute: typeof LayoutRouteLazyImport
+    }
+    '/_layout/s3': {
+      id: '/_layout/s3'
+      path: '/s3'
+      fullPath: '/s3'
+      preLoaderRoute: typeof LayoutS3LazyImport
+      parentRoute: typeof LayoutRouteLazyImport
+    }
+    '/_layout/schemas': {
+      id: '/_layout/schemas'
+      path: '/schemas'
+      fullPath: '/schemas'
+      preLoaderRoute: typeof LayoutSchemasLazyImport
+      parentRoute: typeof LayoutRouteLazyImport
+    }
+    '/_layout/tables': {
+      id: '/_layout/tables'
+      path: '/tables'
+      fullPath: '/tables'
+      preLoaderRoute: typeof LayoutTablesLazyImport
       parentRoute: typeof LayoutRouteLazyImport
     }
     '/_layout/': {
@@ -72,12 +132,20 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 interface LayoutRouteLazyRouteChildren {
-  LayoutDatabaseLazyRoute: typeof LayoutDatabaseLazyRoute
+  LayoutApiLazyRoute: typeof LayoutApiLazyRoute
+  LayoutMigrationsLazyRoute: typeof LayoutMigrationsLazyRoute
+  LayoutS3LazyRoute: typeof LayoutS3LazyRoute
+  LayoutSchemasLazyRoute: typeof LayoutSchemasLazyRoute
+  LayoutTablesLazyRoute: typeof LayoutTablesLazyRoute
   LayoutIndexLazyRoute: typeof LayoutIndexLazyRoute
 }
 
 const LayoutRouteLazyRouteChildren: LayoutRouteLazyRouteChildren = {
-  LayoutDatabaseLazyRoute: LayoutDatabaseLazyRoute,
+  LayoutApiLazyRoute: LayoutApiLazyRoute,
+  LayoutMigrationsLazyRoute: LayoutMigrationsLazyRoute,
+  LayoutS3LazyRoute: LayoutS3LazyRoute,
+  LayoutSchemasLazyRoute: LayoutSchemasLazyRoute,
+  LayoutTablesLazyRoute: LayoutTablesLazyRoute,
   LayoutIndexLazyRoute: LayoutIndexLazyRoute,
 }
 
@@ -87,28 +155,48 @@ const LayoutRouteLazyRouteWithChildren = LayoutRouteLazyRoute._addFileChildren(
 
 export interface FileRoutesByFullPath {
   '': typeof LayoutRouteLazyRouteWithChildren
-  '/database': typeof LayoutDatabaseLazyRoute
+  '/api': typeof LayoutApiLazyRoute
+  '/migrations': typeof LayoutMigrationsLazyRoute
+  '/s3': typeof LayoutS3LazyRoute
+  '/schemas': typeof LayoutSchemasLazyRoute
+  '/tables': typeof LayoutTablesLazyRoute
   '/': typeof LayoutIndexLazyRoute
 }
 
 export interface FileRoutesByTo {
-  '/database': typeof LayoutDatabaseLazyRoute
+  '/api': typeof LayoutApiLazyRoute
+  '/migrations': typeof LayoutMigrationsLazyRoute
+  '/s3': typeof LayoutS3LazyRoute
+  '/schemas': typeof LayoutSchemasLazyRoute
+  '/tables': typeof LayoutTablesLazyRoute
   '/': typeof LayoutIndexLazyRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/_layout': typeof LayoutRouteLazyRouteWithChildren
-  '/_layout/database': typeof LayoutDatabaseLazyRoute
+  '/_layout/api': typeof LayoutApiLazyRoute
+  '/_layout/migrations': typeof LayoutMigrationsLazyRoute
+  '/_layout/s3': typeof LayoutS3LazyRoute
+  '/_layout/schemas': typeof LayoutSchemasLazyRoute
+  '/_layout/tables': typeof LayoutTablesLazyRoute
   '/_layout/': typeof LayoutIndexLazyRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '' | '/database' | '/'
+  fullPaths: '' | '/api' | '/migrations' | '/s3' | '/schemas' | '/tables' | '/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/database' | '/'
-  id: '__root__' | '/_layout' | '/_layout/database' | '/_layout/'
+  to: '/api' | '/migrations' | '/s3' | '/schemas' | '/tables' | '/'
+  id:
+    | '__root__'
+    | '/_layout'
+    | '/_layout/api'
+    | '/_layout/migrations'
+    | '/_layout/s3'
+    | '/_layout/schemas'
+    | '/_layout/tables'
+    | '/_layout/'
   fileRoutesById: FileRoutesById
 }
 
@@ -136,12 +224,32 @@ export const routeTree = rootRoute
     "/_layout": {
       "filePath": "_layout/route.lazy.tsx",
       "children": [
-        "/_layout/database",
+        "/_layout/api",
+        "/_layout/migrations",
+        "/_layout/s3",
+        "/_layout/schemas",
+        "/_layout/tables",
         "/_layout/"
       ]
     },
-    "/_layout/database": {
-      "filePath": "_layout/database.lazy.tsx",
+    "/_layout/api": {
+      "filePath": "_layout/api.lazy.tsx",
+      "parent": "/_layout"
+    },
+    "/_layout/migrations": {
+      "filePath": "_layout/migrations.lazy.tsx",
+      "parent": "/_layout"
+    },
+    "/_layout/s3": {
+      "filePath": "_layout/s3.lazy.tsx",
+      "parent": "/_layout"
+    },
+    "/_layout/schemas": {
+      "filePath": "_layout/schemas.lazy.tsx",
+      "parent": "/_layout"
+    },
+    "/_layout/tables": {
+      "filePath": "_layout/tables.lazy.tsx",
       "parent": "/_layout"
     },
     "/_layout/": {
