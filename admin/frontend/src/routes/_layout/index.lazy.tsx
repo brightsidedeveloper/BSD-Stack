@@ -403,8 +403,8 @@ function EndpointsAndSchemas() {
   return (
     <aside className="min-w-72 bg-gray-800/50 p-4 h-[calc(100vh-64px)] overflow-y-auto border-r border-gray-800">
       <div className="mb-4 flex items-center gap-4">
-        <button className="p-2 bg-green-500 w-full">Write</button>
         <button className="p-2 bg-red-500 w-full">Cancel</button>
+        <button className="p-2 bg-green-500 w-full">Write</button>
       </div>
       <div className="flex items-center gap-4">
         <button className="p-2 bg-gray-500 w-full">+ Endpoint</button>
