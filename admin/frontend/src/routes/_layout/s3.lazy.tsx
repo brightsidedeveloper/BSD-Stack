@@ -5,5 +5,5 @@ export const Route = createLazyFileRoute('/_layout/s3')({
 })
 
 function RouteComponent() {
-  return 'todo'
+  return 'Roll my own... smh'
 }
