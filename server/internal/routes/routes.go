@@ -9,7 +9,7 @@ import (
 )
 
 
-func AddAuthRoutes(r *chi.Mux, h *handler.Handler) {
+func addAuthRoutes(r *chi.Mux, h *handler.Handler) {
   r.Post("/signup", h.PostSignup)
   r.Post("/login", h.PostLogin)
   
@@ -22,7 +22,7 @@ func AddAuthRoutes(r *chi.Mux, h *handler.Handler) {
 }
 
 
-func AddV1Routes(r *chi.Mux, h *handler.Handler) {
+func addV1Routes(r *chi.Mux, h *handler.Handler) {
   
   
   r.Group(func(r chi.Router) {

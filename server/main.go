@@ -36,17 +36,7 @@ func main() {
 
 	addCors(r)
 
-	authRouter := chi.NewRouter()
-
-	routes.AddAuthRoutes(authRouter, h)
-
-	r.Mount("/api/auth", authRouter)
-
-	v1Router := chi.NewRouter()
-
-	routes.AddV1Routes(v1Router, h)
-
-	r.Mount("/api/v1", v1Router)
+	routes.MountRoutes(r, h)
 
 	devMode := os.Getenv("DEV") == "true"
 

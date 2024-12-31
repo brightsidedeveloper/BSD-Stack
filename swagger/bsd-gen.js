@@ -365,7 +365,7 @@ const generateRoutes = (apiJson) => {
   // Generate route functions for each group
   const routeFunctions = Object.entries(routeGroups)
     .map(([groupName, { secured, unsecured }]) => {
-      const functionName = `Add${capitalize(groupName)}Routes`
+      const functionName = `add${capitalize(groupName)}Routes`
       const securedRoutes = secured.length
         ? `
   r.Group(func(r chi.Router) {
@@ -473,6 +473,45 @@ ${details.parameters.map((param) => `\tparams.${capitalize(param.name)} = query.
   })
 }
 
+const generateMountRoutes = (apiJson) => {
+  const routeGroups = new Set() // Store all unique route groups
+
+  // Extract groups from paths
+  Object.keys(apiJson.paths).forEach((path) => {
+    const match = path.match(/^\/api\/([^\/]+)/)
+    if (match) {
+      routeGroups.add(match[1])
+    }
+  })
+
+  // Generate MountRoutes function
+  const routesCode = Array.from(routeGroups)
+    .map(
+      (groupName) => `
+  ${groupName}Router := chi.NewRouter()
+
+  add${capitalize(groupName)}Routes(${groupName}Router, h)
+
+  r.Mount("/api/${groupName}", ${groupName}Router)
+`
+    )
+    .join('\n')
+
+  return `// Auto-generated File - BSD
+
+package routes
+
+import (
+  "go-pmp/internal/handler"
+  "github.com/go-chi/chi/v5"
+)
+
+func MountRoutes(r *chi.Mux, h *handler.Handler) {
+  ${routesCode.trim()}
+}
+`
+}
+
 console.log(
   chalk.blueBright(`
     ███╗░░░███╗░█████╗░██╗░░██╗███████╗  ██████╗░░██████╗██████╗░
@@ -570,6 +609,13 @@ const main = () => {
   const spinnerHandlers = logStep('Generating handler templates')
   generateHandlers(apiJson, handlerDir)
   spinnerHandlers.succeed(chalk.green('Generated handler templates'))
+
+  const spinnerRoutes2 = logStep('Generating mountRoutes.go')
+  const generatedMountRoutes = generateMountRoutes(apiJson)
+  const mountRoutesFile = path.join(routesOutputDir, 'mountRoutes.go')
+  fs.mkdirSync(routesOutputDir, { recursive: true })
+  fs.writeFileSync(mountRoutesFile, generatedMountRoutes, 'utf8')
+  spinnerRoutes2.succeed(chalk.green('Generated mountRoutes.go'))
 
   log(chalk.green('\nDone!\n'))
 }

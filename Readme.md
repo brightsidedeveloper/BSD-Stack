@@ -9,6 +9,7 @@ Both Native & Web
 # Go
 
 The backend is written in Go and serves the web frontend, as well as all the endpoints.
+Swagger will Auto Generate all the routes and make templates for Handlers not yet created.
 
 # React 19 & Vite 6 [ with TanStack ]
 
@@ -39,15 +40,11 @@ I am using Docker to Deploy this app
 - [ ] Implement Dashboard for Easier OpenAPI Configuration
 - [ ] Improve Auto Code Generation and add Dashboard make Support
 - [ ] Add Kubernetes & NFS Support
-- [ ] Implement Terraform 
+- [ ] Implement Terraform
 - [ ] Implement Microservice gen & support?
-
 
 # GOAL - WORKFLOW
 
 Clone repo. Implement migrations and swagger spec in the dashboard.
 Implement required microservices. Generate API. Implement backend handlers.
 Implement client. Deploy on Cloud or Self-Hosted Kubernetes with Terraform
-
-
-
