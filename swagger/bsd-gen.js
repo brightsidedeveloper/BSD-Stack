@@ -335,6 +335,7 @@ const generateGoStructs = (apiJson) => {
 
   return `// Auto-generated File - BSD\n\npackage api\n\n${allStructs.join('\n\n')}`
 }
+
 const generateRoutes = (apiJson) => {
   const routeGroups = {} // Dynamic groups for inferred prefixes
 
