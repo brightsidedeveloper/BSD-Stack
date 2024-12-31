@@ -4,19 +4,11 @@
    */
 
   import { post, get } from './request';
-  import { TestRequest, TestResponse, UserSignUpRequest, MeResponse, UsersResponse, UserLoginRequest, UserAuthResponse, TestParams } from './types';
+  import { UserSignUpRequest, UserLoginRequest, UserAuthResponse, MeResponse, UsersResponse } from './types';
 
   
   class Get {
     
-        /**
-         * Test the API
-         */
-        static async test(params: TestParams) {
-          return get<TestResponse>(`/api/v1/test`, params);
-        }
-      
-  
         /**
          * Get the current user
          */
@@ -66,14 +58,6 @@
          */
         static async deleteAccount() {
           return post<UserAuthResponse>(`/api/auth/deleteAccount`);
-        }
-      
-  
-        /**
-         * Test the API
-         */
-        static async test(params: TestRequest) {
-          return post<TestResponse>(`/api/v1/test`, params);
         }
       
   }

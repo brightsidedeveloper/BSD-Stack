@@ -3,17 +3,18 @@
    * Auto-generated File - BSD
    */
   
-  export type TestRequest = {
-  name: string;
-}
-
-export type TestResponse = {
-  message?: string;
-}
-
-export type UserSignUpRequest = {
+  export type UserSignUpRequest = {
   email: string;
   password: string;
+}
+
+export type UserLoginRequest = {
+  email: string;
+  password: string;
+}
+
+export type UserAuthResponse = {
+  token?: string;
 }
 
 export type MeResponse = {
@@ -30,16 +31,5 @@ export type UsersResponse = {
 }>;
 }
 
-export type UserLoginRequest = {
-  email: string;
-  password: string;
-}
-
-export type UserAuthResponse = {
-  token?: string;
-}
-
-  export type TestParams = {
-  name: string;
-}
+  
   

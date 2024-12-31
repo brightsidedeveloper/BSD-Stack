@@ -67,47 +67,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserAuthResponse'
-
-  /api/v1/test:
-    get:
-      summary: 'Test the API'
-      operationId: 'test'
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: 'name'
-          in: 'query'
-          description: 'The name to test'
-          required: true
-          schema:
-            type: 'string'
-      responses:
-        '200':
-          description: 'The API is working'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TestResponse'
-    post:
-      summary: 'Test the API'
-      operationId: 'test'
-      security:
-        - bearerAuth: []
-      requestBody:
-        description: 'The name to test'
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/TestRequest'
-      responses:
-        '200':
-          description: 'The API is working'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TestResponse'
-
   /api/v1/me:
     get:
       summary: 'Get the current user'
@@ -136,20 +95,6 @@ paths:
                 $ref: '#/components/schemas/UsersResponse'
 components:
   schemas:
-    TestRequest:
-      type: 'object'
-      properties:
-        name:
-          type: 'string'
-          example: 'Tim'
-      required:
-        - 'name'
-    TestResponse:
-      type: 'object'
-      properties:
-        message:
-          type: 'string'
-          example: 'The API is working'
     UserSignUpRequest:
       type: 'object'
       properties:
@@ -162,6 +107,24 @@ components:
       required:
         - 'email'
         - 'password'
+    UserLoginRequest:
+      type: 'object'
+      properties:
+        email:
+          type: 'string'
+          example: 'tim@brightsidedeveloper.com'
+        password:
+          type: 'string'
+          example: 'password'
+      required:
+        - 'email'
+        - 'password'
+    UserAuthResponse:
+      type: 'object'
+      properties:
+        token:
+          type: 'string'
+          example: '1234-1234-1234-1234'
     MeResponse:
       type: 'object'
       properties:
@@ -199,21 +162,3 @@ components:
               - 'id'
               - 'email'
               - 'createdAt'
-    UserLoginRequest:
-      type: 'object'
-      properties:
-        email:
-          type: 'string'
-          example: 'tim@brightsidedeveloper.com'
-        password:
-          type: 'string'
-          example: 'password'
-      required:
-        - 'email'
-        - 'password'
-    UserAuthResponse:
-      type: 'object'
-      properties:
-        token:
-          type: 'string'
-          example: '1234-1234-1234-1234'

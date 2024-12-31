@@ -5,23 +5,7 @@
 
 import { UseQueryOptions, queryOptions } from '@tanstack/react-query';
 import ez from './ez';
-import { TestParams } from './types';
-
-
-export function createTestQuery<TData = Awaited<ReturnType<typeof ez.get.test>>, TError = Error>(params: TestParams, opts: Omit<UseQueryOptions<Awaited<ReturnType<typeof ez.get.test>>, TError, TData, TestQueryKey>, 'queryKey' | 'queryFn'> = {}) {
-  return queryOptions({
-    ...opts,
-    queryKey: getTestQueryKey(params),
-    queryFn() {
-      return ez.get.test(params);
-    },
-  });
-}
-export function getTestQueryKey(params: TestParams) {
-  return ['test', params] as const;
-}
-export type TestQueryKey = ReturnType<typeof getTestQueryKey>;
-
+import {  } from './types';
 
 
 export function createMeQuery<TData = Awaited<ReturnType<typeof ez.get.me>>, TError = Error>(opts: Omit<UseQueryOptions<Awaited<ReturnType<typeof ez.get.me>>, TError, TData, MeQueryKey>, 'queryKey' | 'queryFn'> = {}) {
