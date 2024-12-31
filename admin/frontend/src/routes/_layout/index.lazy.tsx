@@ -1,12 +1,12 @@
 import { createLazyFileRoute } from '@tanstack/react-router'
 import { ReadAPI } from '../../../wailsjs/go/main/App'
-import { ChangeEventHandler, useCallback, useEffect, useMemo } from 'react'
+import { ChangeEventHandler, useCallback, useEffect, useMemo, useState } from 'react'
 import OpenAPISchema, { OpenAPISchemaType } from '../../types/apiSchema'
 import clsx from 'clsx'
 import { atom, useAtom, useAtomValue } from 'jotai'
 
 const apiAtom = atom<OpenAPISchemaType | null>(null)
-const selectedEndpointAtom = atom<string | null>('/api/auth/signup')
+const selectedEndpointAtom = atom<string | null>(null)
 const selectedSchemaAtom = atom<string | null>(null)
 
 export const Route = createLazyFileRoute('/_layout/')({
@@ -45,7 +45,12 @@ function RouteComponent() {
         )}
         {activeSchema && (
           <div>
-            <h3 className="text-2xl font-bold mb-4">{selectedSchema}</h3>
+            <div className="flex items-center justify-between">
+              <h3 className="text-2xl font-bold mb-4">{selectedSchema}</h3>
+              <button onClick={() => {}} className="p-2 bg-gray-200/10 hover:bg-gray-200/15">
+                Delete
+              </button>
+            </div>
             <div className="p-2 bg-gray-200/10">
               <pre>{JSON.stringify(activeSchema, null, 2)}</pre>
             </div>
@@ -53,7 +58,12 @@ function RouteComponent() {
         )}
         {activeEndpoint && (
           <div className="flex flex-col gap-4">
-            <h3 className="text-2xl font-bold">{selectedEndpoint}</h3>
+            <div className="flex items-center justify-between">
+              <h3 className="text-2xl font-bold">{selectedEndpoint}</h3>
+              <button onClick={() => {}} className="p-2 bg-gray-200/10 hover:bg-gray-200/15">
+                Delete
+              </button>
+            </div>
             <hr />
             <EditGet activeEndpoint={activeEndpoint} />
             <hr />
@@ -388,17 +398,23 @@ function EndpointsAndSchemas() {
 
   const [selectedEndpoint, setSelectedEndpoint] = useAtom(selectedEndpointAtom)
 
+  const [endpointQuery, setEndpointQuery] = useState('')
+
   const endpoints = useMemo(() => {
     if (!api) return []
-    return Object.keys(api.paths)
-  }, [api])
+    return Object.keys(api.paths).filter((endpoint) => endpointQuery === '' || endpoint.toLowerCase().includes(endpointQuery.toLowerCase()))
+  }, [api, endpointQuery])
 
   const [selectedSchema, setSelectedSchema] = useAtom(selectedSchemaAtom)
 
+  const [schemaQuery, setSchemaQuery] = useState('')
+
   const schemas = useMemo(() => {
     if (!api || !api.components || !api.components.schemas) return []
-    return Object.keys(api.components.schemas)
-  }, [api])
+    return Object.keys(api.components.schemas).filter(
+      (schema) => schemaQuery === '' || schema.toLowerCase().includes(schemaQuery.toLowerCase())
+    )
+  }, [api, schemaQuery])
 
   return (
     <aside className="min-w-72 bg-gray-800/50 p-4 h-[calc(100vh-64px)] overflow-y-auto border-r border-gray-800">
@@ -413,6 +429,12 @@ function EndpointsAndSchemas() {
       <hr className="my-4" />
       <h3 className="text-xl font-bold underline text-center mb-4">Endpoints</h3>
       <div className="flex flex-col">
+        <input
+          value={endpointQuery}
+          onChange={(e) => setEndpointQuery(e.target.value)}
+          placeholder="Search endpoints..."
+          className="p-2 bg-gray-200/10 mb-2"
+        />
         {endpoints.map((endpoint) => {
           return (
             <button
@@ -431,6 +453,12 @@ function EndpointsAndSchemas() {
       <hr className="my-4" />
       <h3 className="text-xl font-bold underline text-center mb-4">Schemas</h3>
       <div className="flex flex-col">
+        <input
+          value={schemaQuery}
+          onChange={(e) => setSchemaQuery(e.target.value)}
+          placeholder="Search schemas..."
+          className="p-2 bg-gray-200/10 mb-2"
+        />
         {schemas.map((schema) => {
           return (
             <button
