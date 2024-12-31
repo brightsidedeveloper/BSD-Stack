@@ -546,20 +546,18 @@ const main = () => {
   const generatedApiClient = generateApiClient(apiJson)
   const generatedQueries = generateQueries(apiJson)
   const outputQueriesFile = 'queries.ts'
-  spinner2.succeed(chalk.green('Generated files'))
+  spinner2.succeed(chalk.green('Generated files: types.ts, ez.ts, queries.ts & request.ts'))
 
   // Web
-  const spinner3 = logStep('Writing files to Web App')
+  const spinner6 = logStep('Writing files...')
   fs.mkdirSync(webApiDir, { recursive: true })
   fs.writeFileSync(path.join(webApiDir, outputTypesFile), generatedTypes, 'utf8')
   fs.writeFileSync(path.join(webApiDir, outputBSDFile), generatedApiClient, 'utf8')
   fs.writeFileSync(path.join(webApiDir, outputQueriesFile), generatedQueries, 'utf8')
   const webRequestFilePath = path.join(webApiDir, 'request.ts')
   fs.copyFileSync(webRequestTemplateFilePath, webRequestFilePath)
-  spinner3.succeed(chalk.green(`Copied files into ${webApiDir}`))
 
   // Desktop
-  const spinner6 = logStep('Writing files to Desktop App')
   fs.mkdirSync(desktopApiDir, { recursive: true })
   fs.writeFileSync(path.join(desktopApiDir, outputTypesFile), generatedTypes, 'utf8')
   fs.writeFileSync(path.join(desktopApiDir, outputBSDFile), generatedApiClient, 'utf8')
@@ -570,10 +568,8 @@ const main = () => {
   const updatedDesktopRequestContent = desktopRequestContent.replace("const BASE_URL = ''", `const BASE_URL = '${origin}'`)
   const desktopRequestFilePath = path.join(desktopApiDir, 'request.ts')
   fs.writeFileSync(desktopRequestFilePath, updatedDesktopRequestContent, 'utf8')
-  spinner6.succeed(chalk.green(`Copied & Configured files into ${desktopApiDir}`))
 
   // Native
-  const spinner4 = logStep('Writing files to Native App')
   fs.mkdirSync(nativeApiDir, { recursive: true })
   fs.writeFileSync(path.join(nativeApiDir, outputTypesFile), generatedTypes, 'utf8')
   fs.writeFileSync(path.join(nativeApiDir, outputBSDFile), generatedApiClient, 'utf8')
@@ -586,7 +582,7 @@ const main = () => {
     .replace("// @ts-expect-error - don't need module in this file", '')
   const newNativeRequestFilePath = path.join(nativeApiDir, 'request.ts')
   fs.writeFileSync(newNativeRequestFilePath, updatedRequestContent, 'utf8')
-  spinner4.succeed(chalk.green(`Copied & Configured files into ${nativeApiDir}`))
+  spinner6.succeed(chalk.green(`Wrote files to Web, Desktop & Native`))
 
   // Go
   const spinner5 = logStep('Generating Go structs')
@@ -595,27 +591,25 @@ const main = () => {
   fs.mkdirSync(goOutputDir, { recursive: true })
   const goOutputFile = path.join(goOutputDir, 'types.go')
   fs.writeFileSync(goOutputFile, generatedGoStructs, 'utf8')
-  spinner5.succeed(chalk.green(`Generated Go structs in ${goApiDir.replace('.', '') + '/types.go'}`))
+  spinner5.succeed(chalk.green(`Generated Go structs`))
 
   const spinnerRoutes = logStep('Generating Go routes')
-  const generatedRoutes = generateRoutes(apiJson)
+  const generatedMountRoutes = generateMountRoutes(apiJson)
   const routesOutputDir = path.resolve(__dirname, goRoutesDir)
+  const mountRoutesFile = path.join(routesOutputDir, 'mountRoutes.go')
+  fs.mkdirSync(routesOutputDir, { recursive: true })
+  fs.writeFileSync(mountRoutesFile, generatedMountRoutes, 'utf8')
+
+  const generatedRoutes = generateRoutes(apiJson)
   const routesOutputFile = path.join(routesOutputDir, 'routes.go')
   fs.mkdirSync(routesOutputDir, { recursive: true })
   fs.writeFileSync(routesOutputFile, generatedRoutes, 'utf8')
   spinnerRoutes.succeed(chalk.green('Generated Go routes'))
 
   const handlerDir = path.resolve(__dirname, goHandlersDir)
-  const spinnerHandlers = logStep('Generating handler templates')
+  const spinnerHandlers = logStep('Generating route handler templates')
   generateHandlers(apiJson, handlerDir)
-  spinnerHandlers.succeed(chalk.green('Generated handler templates'))
-
-  const spinnerRoutes2 = logStep('Generating mountRoutes.go')
-  const generatedMountRoutes = generateMountRoutes(apiJson)
-  const mountRoutesFile = path.join(routesOutputDir, 'mountRoutes.go')
-  fs.mkdirSync(routesOutputDir, { recursive: true })
-  fs.writeFileSync(mountRoutesFile, generatedMountRoutes, 'utf8')
-  spinnerRoutes2.succeed(chalk.green('Generated mountRoutes.go'))
+  spinnerHandlers.succeed(chalk.green('Generated route handler templates'))
 
   log(chalk.green('\nDone!\n'))
 }
