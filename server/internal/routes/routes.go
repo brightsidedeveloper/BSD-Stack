@@ -27,6 +27,8 @@ func AddV1Routes(r *chi.Mux, h *handler.Handler) {
   
   r.Group(func(r chi.Router) {
     r.Use(h.AuthMiddleware)
+    r.Get("/test", h.GetTest)
+    r.Post("/test", h.PostTest)
     r.Get("/me", h.GetMe)
     r.Get("/users", h.GetUsers)
   })

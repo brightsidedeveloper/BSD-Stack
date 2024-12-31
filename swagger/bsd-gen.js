@@ -249,6 +249,7 @@ const generateGoStructs = (apiJson) => {
   const components = apiJson.components.schemas
 
   const nestedStructs = [] // To store generated nested structs
+  const paramsStructs = [] // To store generated query parameter structs
 
   const mapOpenApiTypeToGoType = (type, items, parentStructName, propName) => {
     if (type === 'integer') return 'int'
@@ -264,16 +265,17 @@ const generateGoStructs = (apiJson) => {
       return arrayItemType
     }
     if (type === 'object') {
-      return generateNestedStructFromObject(parentStructName, propName, { properties: items })
+      return generateNestedStructFromObject(parentStructName, propName, items)
     }
     return 'interface{}' // Default fallback
   }
 
   const generateNestedStructFromObject = (parentStructName, propName, schema) => {
-    const structName = `${parentStructName}${capitalize(propName)}`
+    const structName = `${toPascalCase(parentStructName)}${capitalize(propName)}`
     if (nestedStructs.find((nested) => nested.name === structName)) {
       return structName // Avoid duplicate struct definitions
     }
+
     const fields = Object.entries(schema.properties || {})
       .map(([fieldName, fieldSchema]) => {
         const goType = fieldSchema.$ref
@@ -293,7 +295,7 @@ const generateGoStructs = (apiJson) => {
     const fields = Object.entries(schema.properties || {})
       .map(([propName, propSchema]) => {
         const goType = propSchema.$ref
-          ? `V1${toPascalCase(propSchema.$ref.split('/').pop())}`
+          ? toPascalCase(propSchema.$ref.split('/').pop())
           : mapOpenApiTypeToGoType(propSchema.type, propSchema.items, structName, propName)
         const jsonTag = `\`${'json:' + '"' + propName + '"'}\``
         return `  ${capitalize(propName)} ${goType} ${jsonTag}`
@@ -302,15 +304,37 @@ const generateGoStructs = (apiJson) => {
     return `type ${structName} struct {\n${fields}\n}`
   }
 
-  const structs = Object.entries(components)
+  const generateParamsStruct = (operationId, parameters) => {
+    const structName = `${toPascalCase(operationId)}Params`
+    const fields = parameters
+      .map((param) => {
+        const goType = mapOpenApiTypeToGoType(param.schema.type, param.schema.items, structName, param.name)
+        const jsonTag = `\`${'json:' + '"' + param.name + '"'}\``
+        return `  ${capitalize(param.name)} ${goType} ${jsonTag}`
+      })
+      .join('\n')
+    return `type ${structName} struct {\n${fields}\n}`
+  }
+
+  // Process components.schemas
+  const structs = Object.entries(components || {})
     .map(([name, schema]) => generateStruct(name, schema))
     .join('\n\n')
 
-  const allStructs = [...nestedStructs.map((s) => s.definition), structs]
+  // Process query parameter structs
+  Object.entries(apiJson.paths).forEach(([path, methods]) => {
+    Object.entries(methods).forEach(([method, details]) => {
+      if (details.parameters && details.parameters.length > 0) {
+        const operationId = details.operationId || 'UnnamedOperation'
+        paramsStructs.push(generateParamsStruct(operationId, details.parameters))
+      }
+    })
+  })
+
+  const allStructs = [...nestedStructs.map((s) => s.definition), structs, ...paramsStructs]
 
   return `// Auto-generated File - BSD\n\npackage api\n\n${allStructs.join('\n\n')}`
 }
-
 const generateRoutes = (apiJson) => {
   const routeGroups = {} // Dynamic groups for inferred prefixes
 
@@ -382,7 +406,7 @@ const generateHandlers = (apiJson, handlerDir) => {
     const groupName = prefixMatch ? prefixMatch[1] : 'root'
     const fileName = `${groupName}.go`
     const filePath = path.join(handlerDir, fileName)
-    // Ensure the file exists
+
     if (!fs.existsSync(filePath)) {
       fs.writeFileSync(
         filePath,
@@ -402,18 +426,11 @@ const generateHandlers = (apiJson, handlerDir) => {
         return
       }
 
-      // Determine if the route is secured
       const isSecured = details.security?.length
-
-      // Determine if request body is present
-      const requestBody = details.requestBody?.content?.['application/json']?.schema?.$ref
-      const requestType = requestBody ? requestBody.split('/').pop() : null
-
-      // Determine response type
+      const hasParams = details.parameters?.length > 0
       const responseType = details.responses?.['200']?.content?.['application/json']?.schema?.$ref
       const responseTypeName = responseType ? responseType.split('/').pop() : 'interface{}'
 
-      // Generate handler content
       let handler = `func (h *Handler) ${handlerName}(w http.ResponseWriter, r *http.Request) {\n`
 
       if (isSecured) {
@@ -425,26 +442,23 @@ const generateHandlers = (apiJson, handlerDir) => {
 \t}\n`
       }
 
-      if (requestType) {
+      if (hasParams) {
         handler += `
-\tvar req api.${capitalize(requestType)}
-\tif err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-\t\th.JSON.ValidationError(w, "Invalid request")
-\t\treturn
-\t}\n`
+\tparams := api.${capitalize(operationId)}Params{}
+\tquery := r.URL.Query()
+${details.parameters.map((param) => `\tparams.${capitalize(param.name)} = query.Get("${param.name}")`).join('\n')}\n`
       }
 
       handler += `
-\t// TODO: Write Code Here
+\t// TODO: Handler Logic Here
 
 \th.JSON.Write(w, http.StatusOK, api.${capitalize(responseTypeName)}{
-\t\tMessage: "TODO",
+\t\t// TODO: Fill response data
 \t})
 }\n`
 
-      // Append the new handler to the file
       fs.appendFileSync(filePath, `\n${handler}`, 'utf8')
-      fileContent += handler // Update file content for further checks
+      fileContent += handler
     })
   })
 }

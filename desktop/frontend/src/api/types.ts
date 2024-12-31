@@ -3,7 +3,11 @@
    * Auto-generated File - BSD
    */
   
-  export type TestResponse = {
+  export type TestRequest = {
+  name: string;
+}
+
+export type TestResponse = {
   message?: string;
 }
 
@@ -35,5 +39,7 @@ export type UserAuthResponse = {
   token?: string;
 }
 
-  
+  export type TestParams = {
+  name: string;
+}
   

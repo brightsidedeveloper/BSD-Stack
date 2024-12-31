@@ -67,3 +67,21 @@ func (h *Handler) GetMe(w http.ResponseWriter, r *http.Request) {
 	})
 
 }
+
+func (h *Handler) GetTest(w http.ResponseWriter, r *http.Request) {
+
+	params := api.TestParams{}
+	query := r.URL.Query()
+	params.Name = query.Get("name")
+
+	h.JSON.Write(w, http.StatusOK, api.TestResponse{
+		Message: "Hello, " + params.Name,
+	})
+}
+
+func (h *Handler) PostTest(w http.ResponseWriter, r *http.Request) {
+
+	h.JSON.Write(w, http.StatusOK, api.TestResponse{
+		Message: "Hello, World",
+	})
+}
