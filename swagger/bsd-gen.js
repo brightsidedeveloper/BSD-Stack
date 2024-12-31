@@ -29,14 +29,10 @@ const logStep = (message) => {
   return spinner
 }
 
-// Utility function to capitalize the first letter of a string
 const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1)
 
-// Utility function to convert a string to PascalCase
 const toPascalCase = (str) => str.replace(/(^\w|-\w)/g, (match) => match.replace('-', '').toUpperCase()).replace(/[^a-zA-Z0-9]/g, '')
 
-// Function to generate TypeScript types from OpenAPI JSON
-// Function to map OpenAPI types to TypeScript types
 const mapOpenApiTypeToTsType = (type, items) => {
   if (type === 'integer') return 'number'
   if (type === 'array') {
