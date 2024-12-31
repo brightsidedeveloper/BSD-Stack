@@ -410,7 +410,7 @@ const generateHandlers = (apiJson, handlerDir) => {
     if (!fs.existsSync(filePath)) {
       fs.writeFileSync(
         filePath,
-        `package handler\n\nimport (\n\t"encoding/json"\n\t"net/http"\n\t"go-pmp/api"\n\t"go-pmp/session"\n)\n`,
+        `package handler\n\nimport (\n\t"encoding/json"\n\t"net/http"\n\t"go-pmp/internal/api"\n\t"go-pmp/internal/session"\n)\n`,
         'utf8'
       )
     }
@@ -450,10 +450,20 @@ ${details.parameters.map((param) => `\tparams.${capitalize(param.name)} = query.
       }
 
       handler += `
-\t// TODO: Handler Logic Here
 
-\th.JSON.Write(w, http.StatusOK, api.${capitalize(responseTypeName)}{
-\t\t// TODO: Fill response data
+
+
+\t// ...
+\t//
+\t// * Handler Logic Goes Here
+\t//
+\t// ...
+
+
+
+
+\th.JSON.Write(w, http.StatusOK, ${responseType ? 'api.' + capitalize(responseTypeName) : 'interface'}{
+\t\t// * Response Data Goes Here
 \t})
 }\n`
 
