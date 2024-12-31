@@ -26,7 +26,7 @@ function RouteComponent() {
                 .catch((err) => alert(err.message))
             }}
           >
-            Delete ;(
+            Delete Account
           </button>
           <button
             onClick={() => {
@@ -39,7 +39,7 @@ function RouteComponent() {
                 .catch((err) => alert(err.message))
             }}
           >
-            Logout :(
+            Logout
           </button>
         </div>
       </header>
