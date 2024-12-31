@@ -2,7 +2,10 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"encoding/json"
+	"os"
+
+	"gopkg.in/yaml.v3"
 )
 
 // App struct
@@ -21,7 +24,32 @@ func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
 }
 
-// Greet returns a greeting for the given name
-func (a *App) Greet(name string) string {
-	return fmt.Sprintf("Hello %s, It's show time!", name)
+// ReadAPI reads the YAML file and returns its content as a string
+func (a *App) ReadAPI() (string, error) {
+	// Read the YAML file
+	data, err := os.ReadFile("../swagger/api.yaml")
+	if err != nil {
+		return "", err
+	}
+
+	// Unmarshal YAML into a generic map
+	var yamlData map[string]interface{}
+	err = yaml.Unmarshal(data, &yamlData)
+	if err != nil {
+		return "", err
+	}
+
+	// Convert the map to JSON
+	jsonData, err := json.MarshalIndent(yamlData, "", "  ")
+	if err != nil {
+		return "", err
+	}
+
+	// Return the JSON as a string
+	return string(jsonData), nil
+}
+
+// UpdateAPI updates the YAML file with the provided content
+func (a *App) UpdateAPI(newContent string) error {
+	return os.WriteFile("../swagger/api.yaml", []byte(newContent), 0644)
 }
