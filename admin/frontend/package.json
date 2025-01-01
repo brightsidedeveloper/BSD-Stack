@@ -14,8 +14,10 @@
     "@tanstack/react-router": "^1.92.11",
     "clsx": "^2.1.1",
     "jotai": "^2.11.0",
+    "lucide-react": "^0.469.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-hot-toast": "^2.5.1",
     "ui-webapp": "file:../../packages/ui-webapp",
     "zod": "^3.24.1"
   },
